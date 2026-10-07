@@ -1,0 +1,28 @@
+name: Обновить остатки Kaspi
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # каждый час
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: kaspi-stock
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Собрать прайс
+        env:
+          MS_TOKEN: ${{ secrets.MS_TOKEN }}
+        run: python3 build_feed.py
+      - name: Сохранить, если изменился
+        run: |
+          git add docs/kaspi.xml
+          if ! git diff --cached --quiet; then
+            git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -m "Остатки $(date -u +%F\ %H:%M) UTC"
+            git push
+          fi
