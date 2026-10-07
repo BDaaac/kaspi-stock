@@ -1,7 +1,7 @@
 """Отправляет остатки из МойСклад в Ozon (склад FBS) через Seller API.
 
 Остаток Ozon = (остаток - резерв на «Основном складе») // units_per_offer.
-Цены не трогает. Отчёт о последней отправке — docs/ozon.csv.
+Цены не трогает. Итог отправки пишется в лог запуска.
 """
 import csv
 import json
@@ -13,7 +13,7 @@ import urllib.request
 from build_feed import available_by_code, fetch_assortment
 
 OZON = "https://api-seller.ozon.ru"
-MAPPING, REPORT = "ozon_mapping.csv", "docs/ozon.csv"
+MAPPING = "ozon_mapping.csv"
 WAREHOUSE_FILE, WAREHOUSE_NAME = "ozon_warehouse_id.txt", "enimax"
 
 
@@ -97,12 +97,6 @@ def main():
         status = push(items, warehouse_id(client_id, api_key), client_id, api_key)
     except OzonError as e:
         sys.exit(str(e))
-    os.makedirs(os.path.dirname(REPORT), exist_ok=True)
-    with open(REPORT, "w", encoding="utf-8", newline="") as f:
-        w = csv.writer(f, lineterminator="\n")
-        w.writerow(["offer_id", "ms_code", "units_per_offer", "stock", "status"])
-        for o, c, u, s in items:
-            w.writerow([o, c, u, s, status[o]])
     bad = [(o, st) for o, st in status.items() if st != "ok"]
     print(f"Отправлено: {len(items)}, с ошибкой: {len(bad)}")
     if bad:
