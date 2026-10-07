@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Kaspi — собрать прайс
+        if: ${{ false }}   # на паузе: в файле 58 товаров из 124
         run: python3 build_feed.py
       - name: Ozon — отправить остатки
         if: ${{ !cancelled() && env.OZON_API_KEY != '' }}
