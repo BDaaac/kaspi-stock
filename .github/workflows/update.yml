@@ -13,15 +13,21 @@ concurrency: kaspi-stock
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      OZON_CLIENT_ID: ${{ secrets.OZON_CLIENT_ID }}
+      OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - name: Собрать прайс
-        env:
-          MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      - name: Kaspi — собрать прайс
         run: python3 build_feed.py
-      - name: Сохранить, если изменился
+      - name: Ozon — отправить остатки
+        if: ${{ !cancelled() && env.OZON_API_KEY != '' }}
+        run: python3 ozon_push.py
+      - name: Сохранить, если изменилось
+        if: ${{ !cancelled() }}
         run: |
-          git add docs/kaspi.xml
+          git add docs
           if ! git diff --cached --quiet; then
             git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -m "Остатки $(date -u +%F\ %H:%M) UTC"
             git push
