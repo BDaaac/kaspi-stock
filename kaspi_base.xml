@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-08 00:34">
+<?xml version='1.0' encoding='UTF-8'?>
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-08 01:48">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -6,47 +7,67 @@
             <model>DTC C81A818FAB(8) петля с доводчиком , металл 8 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">8416</cityprice>
             </cityprices>
         </offer>
+        <offer sku="362939600">
+            <model>DTC Боковина для ящика HL11500X+0HLJS01, 45x45 см, металл, 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3145</cityprice>
+            </cityprices>
+        </offer>
         <offer sku="HQ13450A450T01+0HQ13JS01">
             <model>Ящик , 45x45 см, металл, 1 шт</model>
-            <brand/>
+            <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">38472</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="847629547">
+            <model>DTC Боковина для ящика HL12450X+0HLJS01, 45x45 см, металл, 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3558</cityprice>
             </cityprices>
         </offer>
         <offer sku="C81B875FAB(2)">
             <model>DTC C81B875FAB петля с доводчиком накладная, металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">1868</cityprice>
             </cityprices>
         </offer>
         <offer sku="796656797">
-            <model/>
-            <brand/>
+            <model />
+            <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="504.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5423</cityprice>
             </cityprices>
         </offer>
         <offer sku="339160925">
-            <model/>
-            <brand/>
+            <model />
+            <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="498.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5103</cityprice>
@@ -56,7 +77,7 @@
             <model>Толкатель DTC MSB01F01(H03), 1 шт, пластик, сталь, белый</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4968.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">392</cityprice>
@@ -66,7 +87,7 @@
             <model>DTC C81В875FAB петля с доводчиком полунакладная, металл 4 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4999.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3976</cityprice>
@@ -76,37 +97,107 @@
             <model>DTC C81C818FAB(2) петля с доводчиком внутренняя, металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2108</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="103313524">
+            <model>DTC ящик LQ13450Q14900 45x90x13 см, стекло</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">42487</cityprice>
             </cityprices>
         </offer>
         <offer sku="C81A815FAB(4)">
             <model>DTC C81A815FAB петля с доводчиком накладная, металл 4 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">4684</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="669828213">
+            <model>DTC Боковина для ящика HL13500X+0HLJS02, 50x50 см, металл, 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">4547</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81A815FAB(8)">
+            <model>DTC C81A815FAB петля с доводчиком накладная, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">9368</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81В875FAB(10)">
+            <model>DTC C81В875FAB петля с доводчиком полунакладная, металл 10 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">9940</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="672791331">
+            <model>DTC C80E675F(6) петля с доводчиком угловая, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">5658</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81C875FAB(4)">
+            <model>DTC C81C875FAB петля с доводчиком внутренняя, металл 4 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">4072</cityprice>
             </cityprices>
         </offer>
         <offer sku="C81A815FAB(2)">
             <model>DTC C81A815FAB петля с доводчиком накладная, металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2342</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="818297768">
+            <model>DTC C80B678F(2) петля с доводчиком полувнешняя, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">1730</cityprice>
             </cityprices>
         </offer>
         <offer sku="341974891">
             <model>DTC кондуктор для мебельных петель JB37W 1 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4992.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">520</cityprice>
@@ -116,17 +207,27 @@
             <model>DTC ящик LQ13450Q14800 45x80x13 см, стекло</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">40172</cityprice>
             </cityprices>
         </offer>
+        <offer sku="254073326">
+            <model>DTC C81B878FAB(6) петля с доводчиком полувнешняя, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">6150</cityprice>
+            </cityprices>
+        </offer>
         <offer sku="HQ13450A400T01+0HQ13JS01">
             <model>Ящик , 40x45 см, металл, 1 шт</model>
-            <brand/>
+            <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">37456</cityprice>
@@ -136,7 +237,7 @@
             <model>DTC C80E675F петля с доводчиком угловая, металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4999.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">1886</cityprice>
@@ -146,17 +247,87 @@
             <model>DTC C81A818FAB(2) петля с доводчиком накладная, металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2105</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="030977254">
+            <model>DTC C80A689F петля с доводчиком , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">5115</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="324098394">
+            <model>DTC C81B818FAB(6) петля с доводчиком полувнешняя, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">6312</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="962066831">
+            <model>DTC шаблон для сверления DT05 1 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">6954</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="984351896">
+            <model>DTC C81C818FAB(8) петля с доводчиком внутренняя, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">8432</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="542946577">
+            <model>DTC C81B878FAB(8) петля с доводчиком полувнешняя, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">8200</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="310446350">
+            <model>DTC C81B878FAB(2) петля с доводчиком полувнешняя, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2050</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="746408475">
+            <model>Система хранения для обуви DTC металл, 60x45x20 см</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">45015</cityprice>
             </cityprices>
         </offer>
         <offer sku="C81B875FAB(4)">
             <model>DTC C81B875FAB петля с доводчиком накладная, металл 4 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3736</cityprice>
@@ -166,7 +337,7 @@
             <model>DTC C80A689F(6шт) петля с доводчиком , металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">15350</cityprice>
@@ -176,27 +347,67 @@
             <model>DTC C81C875FAB петля с доводчиком внутренняя, металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">6108</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="655880352">
+            <model>DTC C80A689(4шт) петля с доводчиком , металл 4 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">10250</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81E875FAB(2)">
+            <model>DTC C81E875FAB петля с доводчиком угловая, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3320</cityprice>
             </cityprices>
         </offer>
         <offer sku="718710348">
             <model>DTC C81B818FAB петля с доводчиком полувнешняя, металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2105</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81A815FAB(6)">
+            <model>DTC C81A815FAB петля с доводчиком накладная, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">7026</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="HKDCP450A03(E30)">
+            <model>Лоток-вкладыш , металл</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">5096</cityprice>
             </cityprices>
         </offer>
         <offer sku="C81A815FAB(10)">
             <model>DTC C81A815FAB петля с доводчиком накладная, металл 10 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4999.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">11710</cityprice>
@@ -206,37 +417,67 @@
             <model>DTC C80C678F(4) петля с доводчиком внутренняя, металл 4 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3460</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="951774533">
+            <model />
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">9340</cityprice>
             </cityprices>
         </offer>
         <offer sku="196178610">
             <model>DTC C81C818FAB(6) петля с доводчиком внутренняя, металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">6325</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="280807528">
+            <model>DTC C80C678F петля с доводчиком внутренняя, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">5190</cityprice>
             </cityprices>
         </offer>
         <offer sku="667891589">
             <model>DTC C81A818FAB(6) петля с доводчиком накладная, металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">6312</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="542182435">
+            <model>DTC C80E675F(4) петля с доводчиком угловая, металл 4 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3772</cityprice>
             </cityprices>
         </offer>
         <offer sku="733419395">
             <model>Система хранения для обуви DTC металл, 80x45x20 см</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="36.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">49582</cityprice>
@@ -246,17 +487,27 @@
             <model>DTC C80B678F(4) петля с доводчиком полувнешняя, металл 4 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3460</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="315687352">
+            <model>DTC корзина LK450Q13600C01 45x60x25 см, искусственная кожа</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">77638</cityprice>
             </cityprices>
         </offer>
         <offer sku="572642308">
             <model>DTC C81B818FAB(8) петля с доводчиком полувнешняя, металл 8 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">8416</cityprice>
@@ -266,7 +517,7 @@
             <model>DTC C81E875FAB петля с доводчиком угловая, металл 10 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4999.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">16600</cityprice>
@@ -276,7 +527,7 @@
             <model>Система хранения для обуви DTC металл, 90x45x20 см</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="10.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">51348</cityprice>
@@ -286,7 +537,7 @@
             <model>DTC C81E875FAB петля с доводчиком угловая, металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">9960</cityprice>
@@ -294,9 +545,9 @@
         </offer>
         <offer sku="HKDCP500A03(E30)">
             <model>Лоток-вкладыш , металл</model>
-            <brand/>
+            <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4999.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5369</cityprice>
@@ -306,17 +557,87 @@
             <model>Толкатель DTC MSB01F01(H10), 1 шт, пластик, сталь, серый</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4977.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">392</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="115040022">
+            <model>DTC C80C678F(2) петля с доводчиком внутренняя, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">1730</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81C875FAB(8)">
+            <model>DTC C81C875FAB петля с доводчиком внутренняя, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">8144</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81В875FAB(8)">
+            <model>DTC C81В875FAB петля с доводчиком полунакладная, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">7952</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81В875FAB(2)">
+            <model>DTC C81В875FAB петля с доводчиком полунакладная, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">1988</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81В875FAB(6)">
+            <model>DTC C81В875FAB петля с доводчиком полунакладная, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">5964</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81C875FAB(2)">
+            <model>DTC C81C875FAB петля с доводчиком внутренняя, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2036</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81B875FAB(6)">
+            <model>DTC C81B875FAB петля с доводчиком накладная, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">5604</cityprice>
             </cityprices>
         </offer>
         <offer sku="879870888">
             <model>DTC корзина LK450Q13800C01 45x80x25 см, искусственная кожа</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">85421</cityprice>
@@ -326,37 +647,127 @@
             <model>DTC C81C878FAB(4) петля с доводчиком внутренняя, металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4999.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">6150</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="910749639">
+            <model>DTC Боковина для ящика HL13450X+0HLJS02(E30), 45x45 см, металл, 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">4363</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81E875FAB(8)">
+            <model>DTC C81E875FAB петля с доводчиком угловая, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">13280</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="440677861">
+            <model>DTC C81C878FAB петля с доводчиком внутренняя, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2050</cityprice>
             </cityprices>
         </offer>
         <offer sku="298952470">
             <model>DTC Боковина для ящика HL11450X+0HLJS01, 45x45 см, металл, 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3001</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81C875FAB(10)">
+            <model>DTC C81C875FAB петля с доводчиком внутренняя, металл 10 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">10180</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="LQ12450Q14600">
+            <model />
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">35635</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="660991230">
+            <model>DTC ящик LQ12450Q14600 45x60x12 см, стекло</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">32428</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="C81E875FAB(4)">
+            <model>DTC C81E875FAB петля с доводчиком угловая, металл 4 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">6640</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="540013193">
+            <model>DTC кондуктор для мебельных петель DT02 1 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">710</cityprice>
             </cityprices>
         </offer>
         <offer sku="173716117">
             <model>DTC C80B678F петля с доводчиком полувнешняя, металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5190</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="903949497">
+            <model>DTC Боковина для ящика HL12500X+0HLJS01, 50x50 см, металл, 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3734</cityprice>
             </cityprices>
         </offer>
         <offer sku="772935892">
             <model>Кронштейн универсальный скрытый DTC 0DM06(10шт), нержавеющая сталь</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">12650</cityprice>
@@ -366,7 +777,7 @@
             <model>Кронштейн универсальный скрытый DTC 0DM06(4шт), нержавеющая сталь</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5060</cityprice>
@@ -376,7 +787,7 @@
             <model>Кронштейн универсальный скрытый DTC 0DM06, нержавеющая сталь</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">1265</cityprice>
@@ -386,7 +797,7 @@
             <model>DTC SQ2FBM03A (индекс нагрузки 1060-2450) push подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">10136</cityprice>
@@ -396,7 +807,7 @@
             <model>DTC SQ02BH03A (индекс нагрузки 1600-3600) подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">13268</cityprice>
@@ -406,27 +817,77 @@
             <model>DTC SQ02BH03B (индекс нагрузки 1600-3600, темно-серый) подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">13268</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="876258506">
+            <model>DTC SQ2FBH03A (индекс нагрузки 1800-4000) push подъемный механизм , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">13972</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="008118078">
+            <model>DTC SQ2FBC04A (индекс нагрузки 2600-5000), push подъемный механизм , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">14170</cityprice>
             </cityprices>
         </offer>
         <offer sku="093784417">
             <model>DTC SQ02BC03B (индекс нагрузки 2500-4500) подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">13385</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="124697507">
+            <model>DTC SQ02BM03A (индекс нагрузки 960-2350) подъемный механизм , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">9645</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="011814199">
+            <model>Кронштейн универсальный видимый DTC 0DM05, металл</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">915</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="954216030">
+            <model>Кронштейн универсальный видимый DTC 0DM05 (4комплекта), металл</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3660</cityprice>
             </cityprices>
         </offer>
         <offer sku="839898086">
             <model>Кронштейн универсальный видимый DTC 0DM05 (6шт комплект), металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5490</cityprice>
@@ -436,7 +897,7 @@
             <model>Кронштейн универсальный видимый DTC 0DM05 (10 комплектов), металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">9150</cityprice>
@@ -446,7 +907,7 @@
             <model>DTC ST07AM02B подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">32465</cityprice>
@@ -456,27 +917,57 @@
             <model>DTC ST08AM02A подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">39421</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="322052062">
+            <model>DTC ST06AM02B подъемный механизм , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">30840</cityprice>
             </cityprices>
         </offer>
         <offer sku="336315163">
             <model>DTC ST05AH02A подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">30911</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="561009733">
+            <model>DTC ST05AL02A подъемный механизм , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">30051</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="744683593">
+            <model>DTC ST05AM02A подъемный механизм , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">29965</cityprice>
             </cityprices>
         </offer>
         <offer sku="881457120">
             <model>DTC ST06AH02A подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">30915</cityprice>
@@ -486,37 +977,107 @@
             <model>DTC ST04AM02A подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">29140</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="938743008">
+            <model>DTC ST07AH02A подъемный механизм , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">40973</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="903475440">
+            <model>DTC ST04AH02A подъемный механизм , металл 1 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">29140</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="192312142">
+            <model>DTC ящик LQ12450Q14800, 80x45 см, стекло, 1 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">36577</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="948673024">
+            <model>DTC ящик LQ12450Q14900, 90x45 см, стекло, 1 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">40172</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="754340782">
+            <model>DTC 4587110HX направляющие , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2130</cityprice>
             </cityprices>
         </offer>
         <offer sku="460637127">
             <model>DTC 4587112HX направляющие с доводчиком , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4994.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2343</cityprice>
             </cityprices>
         </offer>
-        <offer sku="477956009">
-            <model>DTC 4587116HX направляющие с доводчиком , металл 2 шт</model>
+        <offer sku="808002495">
+            <model>DTC 4587118HX направляющие с доводчиком , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4997.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
-                <cityprice cityId="750000000">2893</cityprice>
+                <cityprice cityId="750000000">3340</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="069223233">
+            <model>DTC 4587120HX направляющие с доводчиком , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3690</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="546028766">
+            <model>DTC 4587110GX направляющие шариковые , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2230</cityprice>
             </cityprices>
         </offer>
         <offer sku="835395559">
             <model>DTC 4587112GX направляющие шариковые , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2573</cityprice>
@@ -526,7 +1087,7 @@
             <model>DTC 4587116GX направляющие шариковые , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3206</cityprice>
@@ -536,7 +1097,7 @@
             <model>DTC C81B875FAB петля с доводчиком накладная, металл 8 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4997.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">7472</cityprice>
@@ -546,7 +1107,7 @@
             <model>Ящик DTC HQ11450Q400T01 металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">35950</cityprice>
@@ -556,30 +1117,130 @@
             <model>Ящик DTC HQ11450Q450T01 металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5000.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">37123</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="832176966">
+            <model>DTC C81A878FAB(2) петля с доводчиком накладная, металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2050</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="049794579">
+            <model>DTC C81A878FAB(8) петля с доводчиком накладная, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">8200</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="562918787">
+            <model>DTC C81A878FAB(6) петля с доводчиком накладная, металл 6 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">6150</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="524370689">
+            <model>DTC D-Motion/500мм GG10C500H1 направляющие с доводчиком скрытого монтажа , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3873</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="733614709">
+            <model>DTC D-Motion/250мм GG10C250H1 направляющие с доводчиком скрытого монтажа , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2898</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="645377860">
+            <model>DTC D-Motion/300мм GG10C300H1 направляющие с доводчиком скрытого монтажа , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">3034</cityprice>
             </cityprices>
         </offer>
         <offer sku="121658527">
             <model>DTC D-Motion/400мм GG10C400H направляющие с доводчиком скрытого монтажа , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="4990.0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3472</cityprice>
             </cityprices>
         </offer>
         <offer sku="114312991">
-            <model/>
+            <model />
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0"/>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3642</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="477956009">
+            <model>DTC 4587116HX направляющие с доводчиком , металл 2 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">2893</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="LYZ800-10L">
+            <model />
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">272709</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="468915757">
+            <model>DTC C81C878FAB(8) петля с доводчиком внутренняя, металл 8 шт</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">8200</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="484370701">
+            <model>Демпфер DTC MS00AH+MSJS01, 1 шт, пластик, белый</model>
+            <brand>dtc</brand>
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">6261</cityprice>
             </cityprices>
         </offer>
     </offers>
