@@ -2,7 +2,7 @@ name: Обновить остатки Kaspi
 
 on:
   schedule:
-    - cron: "17 * * * *"   # каждый час
+    - cron: "*/15 * * * *"   # каждые 15 минут
   workflow_dispatch:
 
 permissions:
