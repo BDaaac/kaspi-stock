@@ -14,6 +14,11 @@ from build_feed import available_by_code, fetch_assortment
 
 OZON = "https://api-seller.ozon.ru"
 MAPPING, REPORT = "ozon_mapping.csv", "docs/ozon.csv"
+WAREHOUSE_FILE, WAREHOUSE_NAME = "ozon_warehouse_id.txt", "enimax"
+
+
+class OzonError(Exception):
+    pass
 
 
 def ozon(path, body, client_id, api_key):
@@ -23,19 +28,26 @@ def ozon(path, body, client_id, api_key):
         with urllib.request.urlopen(req, timeout=60) as resp:
             return json.loads(resp.read())
     except urllib.error.HTTPError as e:
-        sys.exit(f"Ozon {path}: HTTP {e.code} {e.read().decode(errors='replace')[:500]}")
+        raise OzonError(f"Ozon {path}: HTTP {e.code} {e.read().decode(errors='replace')[:500]}")
 
 
 def warehouse_id(client_id, api_key):
-    forced = os.environ.get("OZON_WAREHOUSE_ID", "").strip()
-    if forced:
-        return int(forced)
-    data = ozon("/v1/warehouse/list", {}, client_id, api_key)
-    items = data.get("result") or data.get("warehouses") or []
-    if len(items) != 1:
-        names = ", ".join(f"{w.get('name')}={w.get('warehouse_id')}" for w in items)
-        sys.exit(f"Складов Ozon не один ({names or 'нет'}): задайте OZON_WAREHOUSE_ID")
-    return int(items[0]["warehouse_id"])
+    """Номер склада FBS: из ozon_warehouse_id.txt, иначе из списка складов Ozon."""
+    if os.path.exists(WAREHOUSE_FILE):
+        forced = open(WAREHOUSE_FILE, encoding="utf-8").read().strip()
+        if forced:
+            return int(forced)
+    data = ozon("/v2/warehouse/list", {"limit": 200}, client_id, api_key)
+    items = data.get("warehouses") or data.get("result") or []
+    if isinstance(items, dict):
+        items = items.get("warehouses") or []
+    named = [w for w in items if str(w.get("name", "")).strip().lower() == WAREHOUSE_NAME]
+    pick = named if len(named) == 1 else items
+    listing = ", ".join(f"{w.get('name')}={w.get('warehouse_id')}" for w in items) or "нет"
+    print("Склады Ozon:", listing)
+    if len(pick) != 1:
+        raise OzonError(f"Не удалось выбрать склад ({listing}): впишите номер в {WAREHOUSE_FILE}")
+    return int(pick[0]["warehouse_id"])
 
 
 def compute(rows):
@@ -81,7 +93,10 @@ def main():
     if not (token and client_id and api_key):
         sys.exit("Нужны секреты MS_TOKEN, OZON_CLIENT_ID, OZON_API_KEY")
     items = compute(fetch_assortment(token))
-    status = push(items, warehouse_id(client_id, api_key), client_id, api_key)
+    try:
+        status = push(items, warehouse_id(client_id, api_key), client_id, api_key)
+    except OzonError as e:
+        sys.exit(str(e))
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)
     with open(REPORT, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
