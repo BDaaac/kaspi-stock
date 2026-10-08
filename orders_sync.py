@@ -280,8 +280,8 @@ def ms_existing(external_code):
     return rows[0] if rows else None
 
 
-def ms_demand_from_order(order):
-    """Отгрузка на основании заказа (резерв снимается сам). Возвращает текст для отчёта."""
+def ms_demand_from_order(order, posted):
+    """Отгрузка на основании заказа. posted=False — черновик (галочку «Проведено» ставит склад)."""
     full = http("GET", order["meta"]["href"], ms_headers())
     if full.get("demands"):
         # комментарий как у ручных отгрузок: номер заказа площадки
@@ -300,11 +300,12 @@ def ms_demand_from_order(order):
                     http("PUT", r["meta"]["href"], ms_headers(), {"reserve": 0})
             return f"отгрузка уже есть (вручную, №{manual[0].get('name')}) — резерв снят"
     if DRY_RUN:
-        return "создал бы отгрузку из заказа"
+        return f"создал бы отгрузку из заказа ({'проведена' if posted else 'черновик'})"
     tpl = http("PUT", f"{MS_API}/entity/demand/new", ms_headers(), {"customerOrder": {"meta": order["meta"]}})
     tpl["description"] = full.get("description")
+    tpl["applicable"] = bool(posted)
     d = http("POST", f"{MS_API}/entity/demand", ms_headers(), tpl)
-    return f"отгрузка №{d.get('name')} создана"
+    return f"отгрузка №{d.get('name')} создана ({'проведена' if posted else 'черновик'})"
 
 
 def load_map(path, key):
@@ -500,7 +501,7 @@ def main():
         order_href = existing["meta"]["href"] if existing else None
         if DRY_RUN and existing and shipped and AUTO_DEMAND and not problems:
             try:
-                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing)} |")
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=ext.startswith('ozonfbo-'))} |")
             except Exception as e:
                 log(f"ОШИБКА отгрузки {ext}: {e}")
         if DRY_RUN or problems:
@@ -524,7 +525,7 @@ def main():
                 order_href = r["meta"]["href"]
                 existing = r
             elif existing and shipped and AUTO_DEMAND:
-                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing)} |")
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=ext.startswith('ozonfbo-'))} |")
             elif existing and not active:
                 full = http("GET", existing["meta"]["href"], ms_headers())
                 if full.get("demands") and not shipped:
@@ -543,6 +544,12 @@ def main():
             errors_n += 1
             log(f"ОШИБКА записи {ext}: {e}")
             continue
+        if (AUTO_DEMAND and ext.startswith("ozonfbo-") and existing and active and not problems):
+            try:
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=True)} |")
+            except Exception as e:
+                errors_n += 1
+                log(f"ОШИБКА отгрузки {ext}: {e}")
         if label and order_href:
             try:
                 log(f"| | {desc.splitlines()[0]} | | | | | {ms_attach_label(order_href, label[0], label[1])} |")
@@ -552,7 +559,7 @@ def main():
                 continue
             if AUTO_DEMAND and existing and status not in ("cancelled", "CANCELLED", "CANCELLING"):
                 try:
-                    log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing)} |")
+                    log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=False)} |")
                 except Exception as e:
                     errors_n += 1
                     log(f"ОШИБКА отгрузки {ext}: {e}")
