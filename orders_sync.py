@@ -215,6 +215,7 @@ def main():
     log(f"Период: {DAYS} дн., резерв: {'да' if RESERVE else 'нет'}, FBO: {'да' if INCLUDE_FBO else 'нет'}, "
         f"запуск {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC")
     kmap, omap = load_map("mapping.csv", "kaspi_sku"), load_map("ozon_mapping.csv", "offer_id")
+    kmap.update(load_map("kaspi_orders_extra.csv", "kaspi_sku"))  # товары Kaspi, снятые с продажи
     try:
         products = ms_products()
         log(f"МойСклад (токен заказов): прочитано {sum(len(v) for v in products.values())} карточек — OK")
