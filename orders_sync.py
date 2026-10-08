@@ -204,6 +204,26 @@ def kaspi_assemble(order_id, places=1):
     return None
 
 
+def ozon_ship(posting):
+    """Ozon FBS: собрать отправление одной коробкой (аналог «Я упаковал» в Kaspi)."""
+    body = {"posting_number": posting["posting_number"],
+            "packages": [{"products": [{"product_id": x["sku"], "quantity": x["quantity"]}
+                                       for x in posting.get("products") or []]}],
+            "with": {"additional_data": False}}
+    http("POST", f"{OZON_API}/v4/posting/fbs/ship", ozon_headers(), body)
+
+
+def ozon_label_wait(posting_number):
+    last = None
+    for _ in range(6):  # этикетка готовится не сразу после сборки
+        time.sleep(5)
+        try:
+            return ozon_label(posting_number)
+        except HttpError as e:
+            last = e
+    raise HttpError(f"Ozon {posting_number}: собрано, этикетка пока не готова — заберу в следующем цикле ({last})")
+
+
 def kaspi_label(url):
     h = kaspi_headers()
     h["Accept"] = "application/pdf, */*"
@@ -297,6 +317,7 @@ def main():
         log(f"МойСклад: ОШИБКА {e}")
         products = {}
 
+    avail = ms_available() if (AUTO_ACCEPT or AUTO_ASSEMBLE) else {}
     plans = []  # (external_code, agent, store, description, items, mapping, status_text, active)
 
     log("\n## Kaspi")
@@ -314,7 +335,6 @@ def main():
         for o in orders:  # один заказ может прийти в нескольких состояниях
             seen[(o.get("attributes") or {}).get("code")] = o
         log(f"заказов за период: {len(seen)}")
-        avail = ms_available() if AUTO_ACCEPT else {}
         for code, o in seen.items():
             a = o.get("attributes") or {}
             created = datetime.fromtimestamp((a.get("creationDate") or 0) / 1000, timezone(timedelta(hours=5)))
@@ -376,8 +396,32 @@ def main():
             created = p.get("in_process_at") or p.get("created_at")
             active = p.get("status") in OZON_OPEN
             label = None
+            pn = p["posting_number"]
             if p.get("status") == "awaiting_deliver":  # этикетка доступна после сборки
-                label = (f"ozon-{p['posting_number']}.pdf", lambda n=p["posting_number"]: ozon_label(n))
+                label = (f"ozon-{pn}.pdf", lambda n=pn: ozon_label(n))
+            elif AUTO_ASSEMBLE and p.get("status") == "awaiting_packaging":
+                need = need_pieces(items, omap)
+                mine = ms_existing(f"ozon-{pn}")
+                short = []
+                if need is None:
+                    short.append("товар не найден в таблице соответствия")
+                else:
+                    for c, q in need.items():
+                        have = avail.get(c, 0) + (q if mine else 0)
+                        if have < q:
+                            short.append(f"{c}: нужно {q}, доступно {int(have)}")
+                if short:
+                    log(f"ОШИБКА: Ozon {pn} НЕ собран автоматически — " + "; ".join(short)
+                        + ". Соберите или отмените вручную.")
+                else:
+                    if not mine:
+                        for c, q in need.items():
+                            avail[c] = avail.get(c, 0) - q
+
+                    def _ship_and_label(post=p, n=pn):
+                        ozon_ship(post)
+                        return ozon_label_wait(n)
+                    label = (f"ozon-{pn}.pdf", _ship_and_label)
             plans.append((f"ozon-{p['posting_number']}", AGENT_OZON, STORE_ID, p["posting_number"], items, omap,
                           p.get("status"), active, created, label))
     except Exception as e:
