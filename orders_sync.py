@@ -284,6 +284,11 @@ def ms_demand_from_order(order):
     """Отгрузка на основании заказа (резерв снимается сам). Возвращает текст для отчёта."""
     full = http("GET", order["meta"]["href"], ms_headers())
     if full.get("demands"):
+        # комментарий как у ручных отгрузок: номер заказа площадки
+        for dm in full["demands"]:
+            d = http("GET", dm["meta"]["href"], ms_headers())
+            if not d.get("description") and full.get("description") and not DRY_RUN:
+                http("PUT", dm["meta"]["href"], ms_headers(), {"description": full["description"]})
         return "отгрузка уже есть (из заказа)"
     num = (full.get("description") or "").splitlines()[0].replace("Заказ №", "").strip()
     if num:
@@ -297,6 +302,7 @@ def ms_demand_from_order(order):
     if DRY_RUN:
         return "создал бы отгрузку из заказа"
     tpl = http("PUT", f"{MS_API}/entity/demand/new", ms_headers(), {"customerOrder": {"meta": order["meta"]}})
+    tpl["description"] = full.get("description")
     d = http("POST", f"{MS_API}/entity/demand", ms_headers(), tpl)
     return f"отгрузка №{d.get('name')} создана"
 
