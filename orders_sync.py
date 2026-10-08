@@ -235,17 +235,24 @@ def main():
             log(f"доступ {url}: НЕТ СВЯЗИ ({e})")
     try:
         orders = kaspi_orders()
-        log(f"заказов за период: {len(orders)}")
-        for o in orders:
+        seen = {}
+        for o in orders:  # один заказ может прийти в нескольких состояниях
+            seen[(o.get("attributes") or {}).get("code")] = o
+        log(f"заказов за период: {len(seen)}")
+        for code, o in seen.items():
             a = o.get("attributes") or {}
-            code = a.get("code")
             created = datetime.fromtimestamp((a.get("creationDate") or 0) / 1000, timezone(timedelta(hours=5)))
             status = a.get("status")
+            kd = a.get("kaspiDelivery") or {}
+            handed = kd.get("courierTransmissionDate")
             items = kaspi_entries(o)
-            waybill = bool((a.get("kaspiDelivery") or {}).get("waybill"))
-            active = status not in ("CANCELLED", "CANCELLING", "RETURNED")
+            waybill = bool(kd.get("waybill"))
+            active = (status in ("APPROVED_BY_BANK", "ACCEPTED_BY_MERCHANT")
+                      and o["_state"] in ("NEW", "SIGN_REQUIRED", "PICKUP", "DELIVERY", "KASPI_DELIVERY")
+                      and not handed)
             plans.append((f"kaspi-{code}", AGENT_KASPI, STORE_ID, f"Заказ №{code}", items, kmap,
-                          f"{o['_state']}/{status}, накладная: {'есть' if waybill else 'нет'}", active, created))
+                          f"{o['_state']}/{status}, передан курьеру: {'да' if handed else 'нет'}, "
+                          f"накладная: {'есть' if waybill else 'нет'}", active, created))
     except Exception as e:
         log(f"Kaspi: ОШИБКА {e}")
 
@@ -283,7 +290,7 @@ def main():
     created_n = errors_n = 0
     for ext, agent, store, desc, items, mapping, status, active, created in plans:
         pos, problems = build_positions(items, mapping, products, RESERVE and active)
-        goods = "; ".join(f"{it['sku']}×{it['qty']} @ {it['price']}" +
+        goods = "; ".join(f"{it['sku']}{(' (' + it['name'] + ')') if it.get('name') and it['sku'] not in mapping else ''}×{it['qty']} @ {it['price']}" +
                           (f" → {mapping[it['sku']][0]}×{int(it['qty'] or 0) * mapping[it['sku']][1]}" if it['sku'] in mapping else "")
                           for it in items)
         try:
