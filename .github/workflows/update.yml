@@ -1,23 +1,32 @@
 name: Обновить остатки Kaspi
 
+# Цикл: запуск -> синхронизация -> пауза 15 минут (окружение pause-15m) -> запуск следующего цикла.
+# Расписание ниже — запасной перезапуск, если цикл когда-нибудь оборвётся.
 on:
   schedule:
-    - cron: "*/15 * * * *"   # каждые 15 минут
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
-concurrency: kaspi-stock
+concurrency:
+  group: kaspi-stock
+  cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    outputs:
+      started: ${{ steps.t.outputs.started }}
     env:
       MS_TOKEN: ${{ secrets.MS_TOKEN }}
       OZON_CLIENT_ID: ${{ secrets.OZON_CLIENT_ID }}
       OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
     steps:
+      - id: t
+        run: echo "started=$(date +%s)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
       - name: Kaspi — собрать прайс
         run: python3 build_feed.py
@@ -32,3 +41,21 @@ jobs:
             git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -m "Остатки $(date -u +%F\ %H:%M) UTC"
             git push
           fi
+
+  next:
+    needs: update
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    environment: pause-15m
+    steps:
+      - name: Пауза (страховка, если таймер окружения не сработал)
+        run: |
+          started="${{ needs.update.outputs.started }}"
+          started="${started:-$(date +%s)}"
+          left=$(( 840 - ($(date +%s) - started) ))
+          echo "до следующего запуска ждём: ${left} сек"
+          if [ "$left" -gt 0 ]; then sleep "$left"; fi
+      - name: Запустить следующий цикл
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run update.yml --ref main -R "${{ github.repository }}"
