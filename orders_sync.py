@@ -315,7 +315,11 @@ def main():
                 body = {"organization": ms_meta("organization", ORG_ID), "agent": ms_meta("counterparty", agent),
                         "store": ms_meta("store", store), "description": desc, "externalCode": ext,
                         "positions": pos}
-                http("POST", f"{MS_API}/entity/customerorder", ms_headers(), body)
+                r = http("POST", f"{MS_API}/entity/customerorder", ms_headers(), body)
+                got = ((r.get("store") or {}).get("meta") or {}).get("href", "").rsplit("/", 1)[-1]
+                if got and got != store:  # МойСклад однажды поставил склад по умолчанию — поправляем
+                    http("PUT", r["meta"]["href"], ms_headers(), {"store": ms_meta("store", store)})
+                    log(f"{ext}: склад исправлен с {got} на {store}")
                 created_n += 1
             elif existing and not active:
                 d = http("GET", existing["meta"]["href"] + "/positions?limit=1000", ms_headers())

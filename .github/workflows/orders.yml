@@ -7,10 +7,6 @@ on:
         description: "Записывать в МойСклад (иначе только отчёт)"
         type: boolean
         default: false
-      script:
-        description: "Скрипт (служебное)"
-        type: string
-        default: orders_sync.py
 
 permissions:
   contents: write
@@ -30,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Заказы
-        run: python3 ${{ inputs.script || 'orders_sync.py' }}
+        run: python3 orders_sync.py
       - name: Отчёт в ветку reports
         if: ${{ !cancelled() }}
         run: |
