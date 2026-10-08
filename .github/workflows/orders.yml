@@ -24,6 +24,7 @@ jobs:
       INCLUDE_FBO: "1"
       RESERVE: "1"
       AUTO_ASSEMBLE: "1"
+      AUTO_ACCEPT: "1"
     steps:
       - uses: actions/checkout@v4
       - name: Заказы

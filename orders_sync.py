@@ -22,6 +22,7 @@ RESERVE = os.environ.get("RESERVE", "1") == "1"
 INCLUDE_FBO = os.environ.get("INCLUDE_FBO", "0") == "1"
 DAYS = int(os.environ.get("ORDERS_DAYS", "7"))
 AUTO_ASSEMBLE = os.environ.get("AUTO_ASSEMBLE", "0") == "1"   # «Я упаковал, сформировать накладные»
+AUTO_ACCEPT = os.environ.get("AUTO_ACCEPT", "0") == "1"       # принять новый заказ Kaspi, если товар есть
 
 ORG_ID = "c9415ec7-badf-11ee-0a80-07d10000acd5"            # ENIMAX
 AGENT_KASPI = "2363a7c4-5d82-11f1-0a80-16ae0029fb07"       # Каспи магазин (ЧЛ)
@@ -166,6 +167,29 @@ def ozon_label(posting_number):
     return content
 
 
+def kaspi_accept(order_id, code):
+    body = {"data": {"type": "orders", "id": order_id,
+                     "attributes": {"code": code, "status": "ACCEPTED_BY_MERCHANT"}}}
+    http("POST", f"{KASPI_API}/orders", kaspi_headers(), body)
+
+
+def ms_available():
+    """код -> остаток минус резерв на «Основном складе» (тот же расчёт, что для площадок)."""
+    from build_feed import fetch_assortment, available_by_code
+    av = available_by_code(fetch_assortment(os.environ["MS_TOKEN"].strip()))
+    return {c: v[0] for c, v in av.items() if len(v) == 1}
+
+
+def need_pieces(items, mapping):
+    need = {}
+    for it in items:
+        m = mapping.get(it["sku"] or "")
+        if not m:
+            return None
+        need[m[0]] = need.get(m[0], 0) + int(it["qty"] or 0) * m[1]
+    return need
+
+
 def kaspi_assemble(order_id, places=1):
     """Kaspi Доставка: статус ASSEMBLE (как кнопка «Я упаковал, сформировать накладные»)."""
     body = {"data": {"type": "orders", "id": order_id,
@@ -290,6 +314,7 @@ def main():
         for o in orders:  # один заказ может прийти в нескольких состояниях
             seen[(o.get("attributes") or {}).get("code")] = o
         log(f"заказов за период: {len(seen)}")
+        avail = ms_available() if AUTO_ACCEPT else {}
         for code, o in seen.items():
             a = o.get("attributes") or {}
             created = datetime.fromtimestamp((a.get("creationDate") or 0) / 1000, timezone(timedelta(hours=5)))
@@ -298,6 +323,29 @@ def main():
             handed = kd.get("courierTransmissionDate")
             items = kaspi_entries(o)
             waybill = bool(kd.get("waybill"))
+            if AUTO_ACCEPT and status == "APPROVED_BY_BANK" and o["_state"] == "NEW":
+                need = need_pieces(items, kmap)
+                mine = ms_existing(f"kaspi-{code}")
+                short = []
+                if need is None:
+                    short.append("товар не найден в таблице соответствия")
+                else:
+                    for c, q in need.items():
+                        have = avail.get(c, 0) + (q if mine else 0)  # свой резерв по этому заказу не считаем
+                        if have < q:
+                            short.append(f"{c}: нужно {q}, доступно {int(have)}")
+                if short:
+                    log(f"ОШИБКА: Kaspi заказ №{code} НЕ принят автоматически — " + "; ".join(short)
+                        + ". Примите или отмените вручную.")
+                elif DRY_RUN:
+                    log(f"Kaspi заказ №{code}: принял бы автоматически (товар есть)")
+                else:
+                    kaspi_accept(o["id"], code)
+                    status = "ACCEPTED_BY_MERCHANT"
+                    for c, q in need.items():
+                        if not mine:
+                            avail[c] = avail.get(c, 0) - q
+                    log(f"Kaspi заказ №{code}: принят автоматически")
             active = (status in ("APPROVED_BY_BANK", "ACCEPTED_BY_MERCHANT")
                       and o["_state"] in ("NEW", "SIGN_REQUIRED", "PICKUP", "DELIVERY", "KASPI_DELIVERY")
                       and not handed)
