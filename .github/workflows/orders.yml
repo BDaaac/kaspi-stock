@@ -1,0 +1,31 @@
+name: Заказы → МойСклад (проверка)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  dryrun:
+    runs-on: ubuntu-latest
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      KASPI_TOKEN: ${{ secrets.KASPI_TOKEN }}
+      OZON_CLIENT_ID: ${{ secrets.OZON_CLIENT_ID }}
+      OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
+      DRY_RUN: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверка без записи
+        run: python3 orders_sync.py
+      - name: Отчёт в ветку reports
+        if: ${{ !cancelled() }}
+        run: |
+          cp orders_report.md /tmp/orders_report.md
+          git switch --orphan reports
+          cp /tmp/orders_report.md orders_report.md
+          git add orders_report.md
+          git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -qm "Отчёт проверки заказов"
+          git push -f origin reports
