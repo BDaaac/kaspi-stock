@@ -330,12 +330,17 @@ def main():
             log(f"ОШИБКА записи {ext}: {e}")
 
     log(f"\nИтого: строк {len(plans)}, создано {created_n}, с ошибками/пропусками {errors_n}")
+    return errors_n
 
 
 if __name__ == "__main__":
+    bad = 1
     try:
-        main()
+        bad = main()
     except Exception:
         log("ОШИБКА:\n```\n" + traceback.format_exc() + "\n```")
     finally:
         open(REPORT, "w", encoding="utf-8").write("\n".join(lines) + "\n")
+    # ошибки площадок/МС тоже видны: в логе ищите «ОШИБКА» и «ПРОПУСК»
+    any_err = bad or any("ОШИБКА" in l for l in lines)
+    sys.exit(1 if any_err else 0)

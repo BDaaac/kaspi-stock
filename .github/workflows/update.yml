@@ -24,11 +24,20 @@ jobs:
       MS_TOKEN: ${{ secrets.MS_TOKEN }}
       OZON_CLIENT_ID: ${{ secrets.OZON_CLIENT_ID }}
       OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      KASPI_TOKEN: ${{ secrets.KASPI_TOKEN }}
     steps:
       - id: t
         run: echo "started=$(date +%s)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
+      - name: Заказы Kaspi/Ozon → МойСклад
+        env:
+          DRY_RUN: "0"
+          RESERVE: "1"
+          INCLUDE_FBO: "1"
+        run: python3 orders_sync.py
       - name: Kaspi — собрать прайс
+        if: ${{ !cancelled() }}
         run: python3 build_feed.py
       - name: Ozon — отправить остатки
         if: ${{ !cancelled() && env.OZON_API_KEY != '' }}
@@ -37,6 +46,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           git add docs
+          git reset -q orders_report.md 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -m "Остатки $(date -u +%F\ %H:%M) UTC"
             git push
