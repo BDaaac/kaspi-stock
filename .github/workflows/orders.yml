@@ -25,6 +25,7 @@ jobs:
       RESERVE: "1"
       AUTO_ASSEMBLE: "1"
       AUTO_ACCEPT: "1"
+      AUTO_DEMAND: "1"
     steps:
       - uses: actions/checkout@v4
       - name: Заказы

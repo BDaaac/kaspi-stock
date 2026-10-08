@@ -23,6 +23,8 @@ INCLUDE_FBO = os.environ.get("INCLUDE_FBO", "0") == "1"
 DAYS = int(os.environ.get("ORDERS_DAYS", "7"))
 AUTO_ASSEMBLE = os.environ.get("AUTO_ASSEMBLE", "0") == "1"   # «Я упаковал, сформировать накладные»
 AUTO_ACCEPT = os.environ.get("AUTO_ACCEPT", "0") == "1"       # принять новый заказ Kaspi, если товар есть
+AUTO_DEMAND = os.environ.get("AUTO_DEMAND", "0") == "1"       # отгрузка из заказа, когда площадка приняла товар
+OZON_SHIPPED = {"delivering", "driver_pickup", "delivered", "sent_by_seller"}
 
 ORG_ID = "c9415ec7-badf-11ee-0a80-07d10000acd5"            # ENIMAX
 AGENT_KASPI = "2363a7c4-5d82-11f1-0a80-16ae0029fb07"       # Каспи магазин (ЧЛ)
@@ -278,6 +280,27 @@ def ms_existing(external_code):
     return rows[0] if rows else None
 
 
+def ms_demand_from_order(order):
+    """Отгрузка на основании заказа (резерв снимается сам). Возвращает текст для отчёта."""
+    full = http("GET", order["meta"]["href"], ms_headers())
+    if full.get("demands"):
+        return "отгрузка уже есть (из заказа)"
+    num = (full.get("description") or "").splitlines()[0].replace("Заказ №", "").strip()
+    if num:
+        f = urllib.parse.quote(f"description~{num}", safe="")
+        manual = (http("GET", f"{MS_API}/entity/demand?filter={f}&limit=5", ms_headers()).get("rows") or [])
+        if manual:
+            for r in (http("GET", order["meta"]["href"] + "/positions?limit=1000", ms_headers()).get("rows") or []):
+                if r.get("reserve") and not DRY_RUN:
+                    http("PUT", r["meta"]["href"], ms_headers(), {"reserve": 0})
+            return f"отгрузка уже есть (вручную, №{manual[0].get('name')}) — резерв снят"
+    if DRY_RUN:
+        return "создал бы отгрузку из заказа"
+    tpl = http("PUT", f"{MS_API}/entity/demand/new", ms_headers(), {"customerOrder": {"meta": order["meta"]}})
+    d = http("POST", f"{MS_API}/entity/demand", ms_headers(), tpl)
+    return f"отгрузка №{d.get('name')} создана"
+
+
 def load_map(path, key):
     with open(path, encoding="utf-8", newline="") as f:
         return {r[key]: (r["ms_code"].strip(), int(r["units_per_offer"])) for r in csv.DictReader(f)}
@@ -382,7 +405,9 @@ def main():
                 label = (f"kaspi-{code}.pdf", _assemble_and_get)
             plans.append((f"kaspi-{code}", AGENT_KASPI, STORE_ID, f"Заказ №{code}", items, kmap,
                           f"{o['_state']}/{status}, передан курьеру: {'да' if handed else 'нет'}, "
-                          f"накладная: {'есть' if waybill else 'нет'}", active, created, label))
+                          f"накладная: {'есть' if waybill else 'нет'}", active, created, label,
+                          status not in ("CANCELLED", "CANCELLING", "RETURNED")
+                          and (bool(handed) or status == "COMPLETED")))
     except Exception as e:
         log(f"Kaspi: ОШИБКА {e}")
 
@@ -423,7 +448,7 @@ def main():
                         return ozon_label_wait(n)
                     label = (f"ozon-{pn}.pdf", _ship_and_label)
             plans.append((f"ozon-{p['posting_number']}", AGENT_OZON, STORE_ID, p["posting_number"], items, omap,
-                          p.get("status"), active, created, label))
+                          p.get("status"), active, created, label, p.get("status") in OZON_SHIPPED))
     except Exception as e:
         log(f"Ozon FBS: ОШИБКА {e}")
 
@@ -437,7 +462,8 @@ def main():
                          for x in p.get("products") or []]
                 plans.append((f"ozonfbo-{p['posting_number']}", AGENT_OZON, STORE_OZON_FBO,
                               f"{p['posting_number']}\n\nFBO", items, omap, p.get("status"),
-                              p.get("status") in OZON_OPEN, p.get("in_process_at") or p.get("created_at"), None))
+                              p.get("status") in OZON_OPEN, p.get("in_process_at") or p.get("created_at"), None,
+                              p.get("status") in OZON_SHIPPED))
     except Exception as e:
         log(f"Ozon FBO: ОШИБКА {e}")
 
@@ -445,7 +471,7 @@ def main():
     log("| Площадка | Номер | Дата | Статус | Товары (артикул → код МС × шт) | Уже есть в МС | Действие |")
     log("|---|---|---|---|---|---|---|")
     created_n = errors_n = 0
-    for ext, agent, store, desc, items, mapping, status, active, created, label in plans:
+    for ext, agent, store, desc, items, mapping, status, active, created, label, shipped in plans:
         pos, problems = build_positions(items, mapping, products, RESERVE and active)
         goods = "; ".join(f"{it['sku']}{(' (' + it['name'] + ')') if it.get('name') and it['sku'] not in mapping else ''}×{it['qty']} @ {it['price']}" +
                           (f" → {mapping[it['sku']][0]}×{int(it['qty'] or 0) * mapping[it['sku']][1]}" if it['sku'] in mapping else "")
@@ -458,13 +484,19 @@ def main():
             action = "ПРОПУСК: " + "; ".join(problems)
             errors_n += 1
         elif existing:
-            action = "уже есть" if active else "снять резерв (отгружен или отменён)"
+            action = ("уже есть" if active else
+                      "отгрузка из заказа" if (shipped and AUTO_DEMAND) else "снять резерв (отгружен или отменён)")
         else:
             action = "создать с резервом" if active else "не создавать (уже отгружен или отменён)"
         log(f"| {ext.split('-')[0]} | {desc.splitlines()[0]} | {created} | {status} | {goods} | "
             f"{'да' if existing else 'нет'} | {action} |")
 
         order_href = existing["meta"]["href"] if existing else None
+        if DRY_RUN and existing and shipped and AUTO_DEMAND and not problems:
+            try:
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing)} |")
+            except Exception as e:
+                log(f"ОШИБКА отгрузки {ext}: {e}")
         if DRY_RUN or problems:
             if label and existing:
                 try:
@@ -484,6 +516,8 @@ def main():
                     log(f"{ext}: склад исправлен с {got} на {store}")
                 created_n += 1
                 order_href = r["meta"]["href"]
+            elif existing and shipped and AUTO_DEMAND:
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing)} |")
             elif existing and not active:
                 d = http("GET", existing["meta"]["href"] + "/positions?limit=1000", ms_headers())
                 for r in d.get("rows") or []:

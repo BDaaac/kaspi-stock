@@ -37,6 +37,7 @@ jobs:
           INCLUDE_FBO: "1"
           AUTO_ASSEMBLE: "1"
           AUTO_ACCEPT: "1"
+          AUTO_DEMAND: "1"
         run: python3 orders_sync.py
       - name: Kaspi — собрать прайс
         if: ${{ !cancelled() }}
