@@ -28,6 +28,9 @@ AGENT_OZON = "d1af9410-6dd4-11f1-0a80-0e6e0024cf6c"        # Ozon (ЧЛ)
 STORE_OZON_FBO = "2ccb6a0a-b68b-11f1-0a80-13b3001a4364"    # Ozon FBO
 
 KASPI_API = "https://kaspi.kz/shop/api/v2"
+# Ozon: заказ с резервом создаётся, пока отправление не передано в доставку
+OZON_OPEN = {"awaiting_registration", "acceptance_in_progress", "awaiting_approve",
+             "awaiting_packaging", "awaiting_deliver"}
 OZON_API = "https://api-seller.ozon.ru"
 REPORT = "orders_report.md"
 lines = []
@@ -222,6 +225,14 @@ def main():
     plans = []  # (external_code, agent, store, description, items, mapping, status_text, active)
 
     log("\n## Kaspi")
+    for url in ("https://kaspi.kz/", "https://kaspi.kz/shop/api/v2/orders"):
+        try:
+            urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "enimax-sync/1.0"}), timeout=20)
+            log(f"доступ {url}: OK")
+        except urllib.error.HTTPError as e:
+            log(f"доступ {url}: сайт отвечает (HTTP {e.code})")
+        except Exception as e:
+            log(f"доступ {url}: НЕТ СВЯЗИ ({e})")
     try:
         orders = kaspi_orders()
         log(f"заказов за период: {len(orders)}")
@@ -246,7 +257,7 @@ def main():
             items = [{"sku": x.get("offer_id"), "qty": x.get("quantity"), "price": x.get("price")}
                      for x in p.get("products") or []]
             created = p.get("in_process_at") or p.get("created_at")
-            active = p.get("status") not in ("cancelled",)
+            active = p.get("status") in OZON_OPEN
             plans.append((f"ozon-{p['posting_number']}", AGENT_OZON, STORE_ID, p["posting_number"], items, omap,
                           p.get("status"), active, created))
     except Exception as e:
@@ -262,7 +273,7 @@ def main():
                          for x in p.get("products") or []]
                 plans.append((f"ozonfbo-{p['posting_number']}", AGENT_OZON, STORE_OZON_FBO,
                               f"{p['posting_number']}\n\nFBO", items, omap, p.get("status"),
-                              p.get("status") != "cancelled", p.get("in_process_at") or p.get("created_at")))
+                              p.get("status") in OZON_OPEN, p.get("in_process_at") or p.get("created_at")))
     except Exception as e:
         log(f"Ozon FBO: ОШИБКА {e}")
 
@@ -283,9 +294,9 @@ def main():
             action = "ПРОПУСК: " + "; ".join(problems)
             errors_n += 1
         elif existing:
-            action = "уже есть" if active else "снять резерв (отменён)"
+            action = "уже есть" if active else "снять резерв (отгружен или отменён)"
         else:
-            action = "создать" if active else "не создавать (отменён)"
+            action = "создать с резервом" if active else "не создавать (уже отгружен или отменён)"
         log(f"| {ext.split('-')[0]} | {desc.splitlines()[0]} | {created} | {status} | {goods} | "
             f"{'да' if existing else 'нет'} | {action} |")
 
@@ -303,7 +314,7 @@ def main():
                 for r in d.get("rows") or []:
                     if r.get("reserve"):
                         http("PUT", r["meta"]["href"], ms_headers(), {"reserve": 0})
-                if "Отменён на площадке" not in (existing.get("description") or ""):
+                if status == "cancelled" and "Отменён на площадке" not in (existing.get("description") or ""):
                     http("PUT", existing["meta"]["href"], ms_headers(),
                          {"description": (existing.get("description") or "") + "\nОтменён на площадке"})
         except Exception as e:
