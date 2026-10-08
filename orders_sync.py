@@ -516,9 +516,16 @@ def main():
                     log(f"{ext}: склад исправлен с {got} на {store}")
                 created_n += 1
                 order_href = r["meta"]["href"]
+                existing = r
             elif existing and shipped and AUTO_DEMAND:
                 log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing)} |")
             elif existing and not active:
+                full = http("GET", existing["meta"]["href"], ms_headers())
+                if full.get("demands") and not shipped:
+                    errors_n += 1
+                    log(f"ОШИБКА: {desc.splitlines()[0]} отменён на площадке, но отгрузка по нему уже создана — "
+                        f"удалите отгрузку или оформите возврат вручную")
+                    continue
                 d = http("GET", existing["meta"]["href"] + "/positions?limit=1000", ms_headers())
                 for r in d.get("rows") or []:
                     if r.get("reserve"):
@@ -536,6 +543,13 @@ def main():
             except Exception as e:
                 errors_n += 1
                 log(f"ОШИБКА этикетки {ext}: {e}")
+                continue
+            if AUTO_DEMAND and existing and status not in ("cancelled", "CANCELLED", "CANCELLING"):
+                try:
+                    log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing)} |")
+                except Exception as e:
+                    errors_n += 1
+                    log(f"ОШИБКА отгрузки {ext}: {e}")
 
     log(f"\nИтого: строк {len(plans)}, создано {created_n}, с ошибками/пропусками {errors_n}")
     return errors_n
