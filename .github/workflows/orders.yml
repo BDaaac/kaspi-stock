@@ -16,6 +16,8 @@ jobs:
       OZON_CLIENT_ID: ${{ secrets.OZON_CLIENT_ID }}
       OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
       DRY_RUN: "1"
+      INCLUDE_FBO: "1"
+      RESERVE: "1"
     steps:
       - uses: actions/checkout@v4
       - name: Проверка без записи
