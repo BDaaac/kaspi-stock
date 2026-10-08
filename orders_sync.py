@@ -152,6 +152,41 @@ def ozon_fbo():
         offset += 100
 
 
+# ---------------- Этикетки ----------------
+def ozon_label(posting_number):
+    content, ctype = http("POST", f"{OZON_API}/v2/posting/fbs/package-label", ozon_headers(),
+                          {"posting_number": [posting_number]}, raw=True)
+    if "json" in ctype:  # некоторые версии отдают PDF внутри JSON
+        d = json.loads(content)
+        b64 = d.get("file_content") or (d.get("result") or {}).get("file_content")
+        if not b64:
+            raise HttpError(f"Ozon этикетка {posting_number}: в ответе нет файла: {str(d)[:200]}")
+        return base64.b64decode(b64)
+    return content
+
+
+def kaspi_label(url):
+    h = kaspi_headers()
+    h["Accept"] = "application/pdf, */*"
+    content, ctype = http("GET", url, h, raw=True)
+    if not content.startswith(b"%PDF"):
+        raise HttpError(f"Kaspi накладная: пришёл не PDF ({ctype}, {len(content)} байт)")
+    return content
+
+
+def ms_attach_label(order_href, filename, get_pdf):
+    """Прикрепить PDF к заказу, если такого файла ещё нет. Возвращает текст для отчёта."""
+    files = http("GET", order_href + "/files?limit=100", ms_headers())
+    if any(f.get("filename") == filename for f in files.get("rows") or []):
+        return "этикетка уже прикреплена"
+    if DRY_RUN:
+        return "этикетка: прикрепил бы"
+    pdf = get_pdf()
+    http("POST", order_href + "/files", ms_headers(),
+         [{"filename": filename, "content": base64.b64encode(pdf).decode()}])
+    return f"этикетка прикреплена ({len(pdf) // 1024} КБ)"
+
+
 # ---------------- МойСклад ----------------
 def ms_headers():
     return {"Authorization": f"Bearer {os.environ['MS_ORDERS_TOKEN'].strip()}",
@@ -251,9 +286,12 @@ def main():
             active = (status in ("APPROVED_BY_BANK", "ACCEPTED_BY_MERCHANT")
                       and o["_state"] in ("NEW", "SIGN_REQUIRED", "PICKUP", "DELIVERY", "KASPI_DELIVERY")
                       and not handed)
+            label = None
+            if waybill:
+                label = (f"kaspi-{code}.pdf", lambda u=kd.get("waybill"): kaspi_label(u))
             plans.append((f"kaspi-{code}", AGENT_KASPI, STORE_ID, f"Заказ №{code}", items, kmap,
                           f"{o['_state']}/{status}, передан курьеру: {'да' if handed else 'нет'}, "
-                          f"накладная: {'есть' if waybill else 'нет'}", active, created))
+                          f"накладная: {'есть' if waybill else 'нет'}", active, created, label))
     except Exception as e:
         log(f"Kaspi: ОШИБКА {e}")
 
@@ -266,8 +304,11 @@ def main():
                      for x in p.get("products") or []]
             created = p.get("in_process_at") or p.get("created_at")
             active = p.get("status") in OZON_OPEN
+            label = None
+            if p.get("status") == "awaiting_deliver":  # этикетка доступна после сборки
+                label = (f"ozon-{p['posting_number']}.pdf", lambda n=p["posting_number"]: ozon_label(n))
             plans.append((f"ozon-{p['posting_number']}", AGENT_OZON, STORE_ID, p["posting_number"], items, omap,
-                          p.get("status"), active, created))
+                          p.get("status"), active, created, label))
     except Exception as e:
         log(f"Ozon FBS: ОШИБКА {e}")
 
@@ -281,7 +322,7 @@ def main():
                          for x in p.get("products") or []]
                 plans.append((f"ozonfbo-{p['posting_number']}", AGENT_OZON, STORE_OZON_FBO,
                               f"{p['posting_number']}\n\nFBO", items, omap, p.get("status"),
-                              p.get("status") in OZON_OPEN, p.get("in_process_at") or p.get("created_at")))
+                              p.get("status") in OZON_OPEN, p.get("in_process_at") or p.get("created_at"), None))
     except Exception as e:
         log(f"Ozon FBO: ОШИБКА {e}")
 
@@ -289,7 +330,7 @@ def main():
     log("| Площадка | Номер | Дата | Статус | Товары (артикул → код МС × шт) | Уже есть в МС | Действие |")
     log("|---|---|---|---|---|---|---|")
     created_n = errors_n = 0
-    for ext, agent, store, desc, items, mapping, status, active, created in plans:
+    for ext, agent, store, desc, items, mapping, status, active, created, label in plans:
         pos, problems = build_positions(items, mapping, products, RESERVE and active)
         goods = "; ".join(f"{it['sku']}{(' (' + it['name'] + ')') if it.get('name') and it['sku'] not in mapping else ''}×{it['qty']} @ {it['price']}" +
                           (f" → {mapping[it['sku']][0]}×{int(it['qty'] or 0) * mapping[it['sku']][1]}" if it['sku'] in mapping else "")
@@ -308,7 +349,13 @@ def main():
         log(f"| {ext.split('-')[0]} | {desc.splitlines()[0]} | {created} | {status} | {goods} | "
             f"{'да' if existing else 'нет'} | {action} |")
 
+        order_href = existing["meta"]["href"] if existing else None
         if DRY_RUN or problems:
+            if label and existing:
+                try:
+                    log(f"| | {desc.splitlines()[0]} | | | | | {ms_attach_label(order_href, label[0], label[1])} |")
+                except Exception as e:
+                    log(f"ОШИБКА этикетки {ext}: {e}")
             continue
         try:
             if not existing and active:
@@ -321,6 +368,7 @@ def main():
                     http("PUT", r["meta"]["href"], ms_headers(), {"store": ms_meta("store", store)})
                     log(f"{ext}: склад исправлен с {got} на {store}")
                 created_n += 1
+                order_href = r["meta"]["href"]
             elif existing and not active:
                 d = http("GET", existing["meta"]["href"] + "/positions?limit=1000", ms_headers())
                 for r in d.get("rows") or []:
@@ -332,6 +380,13 @@ def main():
         except Exception as e:
             errors_n += 1
             log(f"ОШИБКА записи {ext}: {e}")
+            continue
+        if label and order_href:
+            try:
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_attach_label(order_href, label[0], label[1])} |")
+            except Exception as e:
+                errors_n += 1
+                log(f"ОШИБКА этикетки {ext}: {e}")
 
     log(f"\nИтого: строк {len(plans)}, создано {created_n}, с ошибками/пропусками {errors_n}")
     return errors_n
