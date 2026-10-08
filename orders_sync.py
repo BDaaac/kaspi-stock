@@ -21,6 +21,7 @@ DRY_RUN = os.environ.get("DRY_RUN", "1") != "0"
 RESERVE = os.environ.get("RESERVE", "1") == "1"
 INCLUDE_FBO = os.environ.get("INCLUDE_FBO", "0") == "1"
 DAYS = int(os.environ.get("ORDERS_DAYS", "7"))
+AUTO_ASSEMBLE = os.environ.get("AUTO_ASSEMBLE", "0") == "1"   # «Я упаковал, сформировать накладные»
 
 ORG_ID = "c9415ec7-badf-11ee-0a80-07d10000acd5"            # ENIMAX
 AGENT_KASPI = "2363a7c4-5d82-11f1-0a80-16ae0029fb07"       # Каспи магазин (ЧЛ)
@@ -165,6 +166,20 @@ def ozon_label(posting_number):
     return content
 
 
+def kaspi_assemble(order_id, places=1):
+    """Kaspi Доставка: статус ASSEMBLE (как кнопка «Я упаковал, сформировать накладные»)."""
+    body = {"data": {"type": "orders", "id": order_id,
+                     "attributes": {"status": "ASSEMBLE", "numberOfSpace": str(places)}}}
+    http("POST", f"{KASPI_API}/orders", kaspi_headers(), body)
+    for _ in range(6):  # накладная формируется не мгновенно
+        time.sleep(5)
+        d = http("GET", f"{KASPI_API}/orders/{order_id}", kaspi_headers())
+        url = (((d.get("data") or {}).get("attributes") or {}).get("kaspiDelivery") or {}).get("waybill")
+        if url:
+            return url
+    return None
+
+
 def kaspi_label(url):
     h = kaspi_headers()
     h["Accept"] = "application/pdf, */*"
@@ -289,6 +304,14 @@ def main():
             label = None
             if waybill:
                 label = (f"kaspi-{code}.pdf", lambda u=kd.get("waybill"): kaspi_label(u))
+            elif (AUTO_ASSEMBLE and active and o["_state"] == "KASPI_DELIVERY"
+                  and status == "ACCEPTED_BY_MERCHANT"):
+                def _assemble_and_get(oid=o["id"], c=code):
+                    url = kaspi_assemble(oid)
+                    if not url:
+                        raise HttpError(f"Kaspi {c}: ASSEMBLE отправлен, но накладная пока не появилась — заберу в следующем цикле")
+                    return kaspi_label(url)
+                label = (f"kaspi-{code}.pdf", _assemble_and_get)
             plans.append((f"kaspi-{code}", AGENT_KASPI, STORE_ID, f"Заказ №{code}", items, kmap,
                           f"{o['_state']}/{status}, передан курьеру: {'да' if handed else 'нет'}, "
                           f"накладная: {'есть' if waybill else 'нет'}", active, created, label))
