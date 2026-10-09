@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-09 15:24">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-09 16:30">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -547,7 +547,7 @@
             <model>Лоток-вкладыш , металл</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="471" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="472" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5369</cityprice>
@@ -1047,7 +1047,7 @@
             <model>DTC 4587118HX направляющие с доводчиком , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1204" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1206" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3340</cityprice>
