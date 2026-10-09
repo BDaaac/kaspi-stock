@@ -183,16 +183,24 @@ def ms_available():
     return {c: v[0] for c, v in av.items() if len(v) == 1}
 
 
-# Подъёмники Top Stay ST: в заказ автоматически добавляется ограничитель STW83
-# (1 шт на комплект), его розничная цена вычитается из цены подъёмника — сумма заказа не меняется.
-LIMITER_CODE = "STW83"
-LIMITER_PRICE_FALLBACK = 493  # тг, если цену не удалось прочитать из МС
-LIFT_RE = re.compile(r"^ST0\d+A[HML]02[AB]$")
-LIMITER = {"price": None}  # розничная цена STW83 в тиынах, заполняется в ms_products()
+# Комплектующие, которые входят в цену товара на площадке. При создании заказа они добавляются
+# отдельными позициями по розничной цене МС, а цена основного товара уменьшается на их стоимость —
+# сумма заказа остаётся равной цене площадки.
+#   (шаблон кода товара, [(код комплектующего, шт на 1 шт товара), ...])
+COMPONENT_RULES = [
+    (re.compile(r"^ST0\d+A[HML]02[AB]$"), [("STW83", 1)]),                          # подъёмники Top Stay ST
+    (re.compile(r"^C81[A-Z0-9]+FAB$"), [("81T20TQA", 1), ("G10H", 1), ("S18HH", 1)]),  # петли Pivot Star
+]
+PRICE_FALLBACK = {"STW83": 493}  # тг, если розничную цену не удалось прочитать из МС
+COMPONENT_PRICES = {}  # код -> розничная цена в тиынах, заполняется в ms_products()
+COMPONENT_CODES = {c for _, comps in COMPONENT_RULES for c, _ in comps}
 
 
-def is_lift(code):
-    return bool(LIFT_RE.match(code or ""))
+def components(code):
+    for rx, comps in COMPONENT_RULES:
+        if rx.match(code or ""):
+            return comps
+    return []
 
 
 def need_pieces(items, mapping):
@@ -203,8 +211,8 @@ def need_pieces(items, mapping):
             return None
         q = int(it["qty"] or 0) * m[1]
         need[m[0]] = need.get(m[0], 0) + q
-        if is_lift(m[0]):
-            need[LIMITER_CODE] = need.get(LIMITER_CODE, 0) + q
+        for c, k in components(m[0]):
+            need[c] = need.get(c, 0) + q * k
     return need
 
 
@@ -284,12 +292,12 @@ def ms_products():
             code = (r.get("code") or "").strip()
             if code:
                 out.setdefault(code, []).append(r["meta"])
-            if code == LIMITER_CODE:
+            if code in COMPONENT_CODES:
                 prices = [p for p in r.get("salePrices") or [] if p.get("value")]
                 retail = [p for p in prices if "розн" in ((p.get("priceType") or {}).get("name") or "").lower()]
                 pick = (retail or prices or [None])[0]
                 if pick:
-                    LIMITER["price"] = round(pick["value"])
+                    COMPONENT_PRICES[code] = round(pick["value"])
         if len(rows) < 1000:
             return out
         offset += 1000
@@ -349,23 +357,30 @@ def build_positions(items, mapping, products, reserve):
             continue
         qty = int(it["qty"] or 0) * units
         price_per_piece = round(float(it["price"] or 0) / units * 100)  # в тиынах
-        extra = None
-        if is_lift(code):
-            lim = products.get(LIMITER_CODE)
-            if not lim or len(lim) != 1:
-                problems.append(f"ограничитель {LIMITER_CODE} {'не найден' if not lim else 'не уникален'} в МойСклад")
-                continue
-            lim_price = LIMITER["price"] or LIMITER_PRICE_FALLBACK * 100
-            price_per_piece -= lim_price  # ограничитель входит в цену площадки
-            extra = {"quantity": qty, "price": lim_price, "assortment": {"meta": lim[0]}}
+        extras, bad = [], []
+        for c, k in components(code):
+            meta = products.get(c)
+            price = COMPONENT_PRICES.get(c) or (PRICE_FALLBACK[c] * 100 if c in PRICE_FALLBACK else None)
+            if not meta or len(meta) != 1:
+                bad.append(f"комплектующее {c} {'не найдено' if not meta else 'не уникально'} в МойСклад")
+            elif not price:
+                bad.append(f"у комплектующего {c} нет розничной цены в МойСклад")
+            else:
+                extras.append({"quantity": qty * k, "price": price, "assortment": {"meta": meta[0]}})
+                price_per_piece -= price * k  # комплектующее входит в цену площадки
+        if extras and price_per_piece <= 0:
+            bad.append(f"{code}: цена площадки меньше стоимости комплектующих")
+        if bad:
+            problems += bad
+            continue
         p = {"quantity": qty, "price": price_per_piece, "assortment": {"meta": metas[0]}}
         if reserve:
             p["reserve"] = qty
         pos.append(p)
-        if extra:
+        for e in extras:
             if reserve:
-                extra["reserve"] = qty
-            pos.append(extra)
+                e["reserve"] = e["quantity"]
+            pos.append(e)
     return pos, problems
 
 
@@ -378,8 +393,10 @@ def main():
     try:
         products = ms_products()
         log(f"МойСклад (токен заказов): прочитано {sum(len(v) for v in products.values())} карточек — OK")
-        log(f"Ограничитель {LIMITER_CODE}: розничная цена "
-            + (f"{LIMITER['price'] / 100:g} тг (из МС)" if LIMITER["price"] else f"{LIMITER_PRICE_FALLBACK} тг (по умолчанию)"))
+        log("Комплектующие (розничная цена): " + ", ".join(
+            f"{c} {COMPONENT_PRICES[c] / 100:g} тг" if c in COMPONENT_PRICES
+            else f"{c} {PRICE_FALLBACK[c]} тг (по умолчанию)" if c in PRICE_FALLBACK
+            else f"{c} — НЕТ ЦЕНЫ" for c in sorted(COMPONENT_CODES)))
     except Exception as e:
         log(f"МойСклад: ОШИБКА {e}")
         products = {}
