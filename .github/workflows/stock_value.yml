@@ -1,0 +1,25 @@
+name: Остатки с ценами (зашифрованный отчёт)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 stock_value.py
+      - name: Зашифровать и сохранить в ветку private-reports
+        run: |
+          openssl cms -encrypt -binary -aes256 -in stock_value.json -out /tmp/stock_value.enc -outform DER report_cert.pem
+          rm stock_value.json
+          git switch --orphan private-reports
+          cp /tmp/stock_value.enc stock_value.enc
+          git add stock_value.enc
+          git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -qm "Зашифрованный отчёт остатков"
+          git push -f origin private-reports
