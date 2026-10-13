@@ -310,16 +310,28 @@ def ms_existing(external_code):
     return rows[0] if rows else None
 
 
-def ms_demand_from_order(order, posted):
-    """Отгрузка на основании заказа. posted=False — черновик (галочку «Проведено» ставит склад)."""
+def _store_id(doc):
+    return ((doc.get("store") or {}).get("meta") or {}).get("href", "").rsplit("/", 1)[-1]
+
+
+def ms_demand_from_order(order, posted, store=None):
+    """Отгрузка на основании заказа. posted=False — черновик (галочку «Проведено» ставит склад).
+    store — склад, с которого должна быть отгрузка; заказ и отгрузки с другим складом исправляются."""
     full = http("GET", order["meta"]["href"], ms_headers())
+    fixed = []
+    if store and _store_id(full) != store and not DRY_RUN:
+        http("PUT", full["meta"]["href"], ms_headers(), {"store": ms_meta("store", store)})
+        fixed.append(f"склад заказа {full.get('name')} исправлен")
     if full.get("demands"):
         # комментарий как у ручных отгрузок: номер заказа площадки
         for dm in full["demands"]:
             d = http("GET", dm["meta"]["href"], ms_headers())
             if not d.get("description") and full.get("description") and not DRY_RUN:
                 http("PUT", dm["meta"]["href"], ms_headers(), {"description": full["description"]})
-        return "отгрузка уже есть (из заказа)"
+            if store and _store_id(d) != store and not DRY_RUN:
+                http("PUT", dm["meta"]["href"], ms_headers(), {"store": ms_meta("store", store)})
+                fixed.append(f"склад отгрузки {d.get('name')} исправлен")
+        return "отгрузка уже есть (из заказа)" + ("; " + "; ".join(fixed) if fixed else "")
     num = (full.get("description") or "").splitlines()[0].replace("Заказ №", "").strip()
     if num:
         f = urllib.parse.quote(f"description~{num}", safe="")
@@ -333,6 +345,8 @@ def ms_demand_from_order(order, posted):
         return f"создал бы отгрузку из заказа ({'проведена' if posted else 'черновик'})"
     tpl = http("PUT", f"{MS_API}/entity/demand/new", ms_headers(), {"customerOrder": {"meta": order["meta"]}})
     tpl["description"] = full.get("description")
+    if store:
+        tpl["store"] = ms_meta("store", store)
     tpl["applicable"] = bool(posted)
     d = http("POST", f"{MS_API}/entity/demand", ms_headers(), tpl)
     return f"отгрузка №{d.get('name')} создана ({'проведена' if posted else 'черновик'})"
@@ -555,7 +569,7 @@ def main():
         order_href = existing["meta"]["href"] if existing else None
         if DRY_RUN and existing and shipped and AUTO_DEMAND and not problems:
             try:
-                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=ext.startswith('ozonfbo-'))} |")
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=ext.startswith('ozonfbo-'), store=store if ext.startswith('ozonfbo-') else None)} |")
             except Exception as e:
                 log(f"ОШИБКА отгрузки {ext}: {e}")
         if DRY_RUN or problems:
@@ -571,7 +585,8 @@ def main():
                         "store": ms_meta("store", store), "description": desc, "externalCode": ext,
                         "positions": pos}
                 r = http("POST", f"{MS_API}/entity/customerorder", ms_headers(), body)
-                got = ((r.get("store") or {}).get("meta") or {}).get("href", "").rsplit("/", 1)[-1]
+                r = http("GET", r["meta"]["href"], ms_headers())  # склад проверяем по сохранённому заказу
+                got = _store_id(r)
                 if got and got != store:  # МойСклад однажды поставил склад по умолчанию — поправляем
                     http("PUT", r["meta"]["href"], ms_headers(), {"store": ms_meta("store", store)})
                     log(f"{ext}: склад исправлен с {got} на {store}")
@@ -579,7 +594,7 @@ def main():
                 order_href = r["meta"]["href"]
                 existing = r
             elif existing and shipped and AUTO_DEMAND:
-                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=ext.startswith('ozonfbo-'))} |")
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=ext.startswith('ozonfbo-'), store=store if ext.startswith('ozonfbo-') else None)} |")
             elif existing and not active:
                 full = http("GET", existing["meta"]["href"], ms_headers())
                 if full.get("demands") and not shipped:
@@ -600,7 +615,7 @@ def main():
             continue
         if (AUTO_DEMAND and ext.startswith("ozonfbo-") and existing and active and not problems):
             try:
-                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=True)} |")
+                log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=True, store=store if ext.startswith('ozonfbo-') else None)} |")
             except Exception as e:
                 errors_n += 1
                 log(f"ОШИБКА отгрузки {ext}: {e}")
@@ -613,7 +628,7 @@ def main():
                 continue
             if AUTO_DEMAND and existing and status not in ("cancelled", "CANCELLED", "CANCELLING"):
                 try:
-                    log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=False)} |")
+                    log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=False, store=store if ext.startswith('ozonfbo-') else None)} |")
                 except Exception as e:
                     errors_n += 1
                     log(f"ОШИБКА отгрузки {ext}: {e}")
