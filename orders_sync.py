@@ -19,6 +19,7 @@ from datetime import datetime, timedelta, timezone
 from build_feed import API as MS_API, STORE_ID
 
 DRY_RUN = os.environ.get("DRY_RUN", "1") != "0"
+VAT = 16  # НДС, %; цена площадки включает НДС
 RESERVE = os.environ.get("RESERVE", "1") == "1"
 INCLUDE_FBO = os.environ.get("INCLUDE_FBO", "0") == "1"
 DAYS = int(os.environ.get("ORDERS_DAYS", "7"))
@@ -345,6 +346,7 @@ def ms_demand_from_order(order, posted, store=None):
         return f"создал бы отгрузку из заказа ({'проведена' if posted else 'черновик'})"
     tpl = http("PUT", f"{MS_API}/entity/demand/new", ms_headers(), {"customerOrder": {"meta": order["meta"]}})
     tpl["description"] = full.get("description")
+    tpl["vatEnabled"], tpl["vatIncluded"] = True, True
     if store:
         tpl["store"] = ms_meta("store", store)
     tpl["applicable"] = bool(posted)
@@ -380,14 +382,16 @@ def build_positions(items, mapping, products, reserve):
             elif not price:
                 bad.append(f"у комплектующего {c} нет розничной цены в МойСклад")
             else:
-                extras.append({"quantity": qty * k, "price": price, "assortment": {"meta": meta[0]}})
+                extras.append({"quantity": qty * k, "price": price, "vat": VAT, "vatEnabled": True,
+                               "assortment": {"meta": meta[0]}})
                 price_per_piece -= price * k  # комплектующее входит в цену площадки
         if extras and price_per_piece <= 0:
             bad.append(f"{code}: цена площадки меньше стоимости комплектующих")
         if bad:
             problems += bad
             continue
-        p = {"quantity": qty, "price": price_per_piece, "assortment": {"meta": metas[0]}}
+        p = {"quantity": qty, "price": price_per_piece, "vat": VAT, "vatEnabled": True,
+             "assortment": {"meta": metas[0]}}
         if reserve:
             p["reserve"] = qty
         pos.append(p)
@@ -583,7 +587,7 @@ def main():
             if not existing and active:
                 body = {"organization": ms_meta("organization", ORG_ID), "agent": ms_meta("counterparty", agent),
                         "store": ms_meta("store", store), "description": desc, "externalCode": ext,
-                        "positions": pos}
+                        "vatEnabled": True, "vatIncluded": True, "positions": pos}
                 r = http("POST", f"{MS_API}/entity/customerorder", ms_headers(), body)
                 r = http("GET", r["meta"]["href"], ms_headers())  # склад проверяем по сохранённому заказу
                 got = _store_id(r)

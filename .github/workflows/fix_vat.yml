@@ -1,0 +1,19 @@
+name: Исправить НДС в заказах площадок (разово)
+
+on:
+  workflow_dispatch:
+    inputs:
+      write:
+        description: "Записывать в МойСклад (иначе только список)"
+        type: boolean
+        default: false
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    env:
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      DRY_RUN: ${{ inputs.write && '0' || '1' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 fix_vat.py
