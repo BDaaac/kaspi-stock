@@ -31,7 +31,7 @@ rows = fetch(token, False) + fetch(token, True)
 out = []
 for r in rows:
     out.append({
-        "code": r.get("code"), "name": r.get("name"), "path": r.get("pathName"),
+        "id": r.get("id"), "code": r.get("code"), "name": r.get("name"), "path": r.get("pathName"),
         "type": (r.get("meta") or {}).get("type"), "archived": r.get("archived"),
         "stock": r.get("stock"), "reserve": r.get("reserve"),
         "prices": {(p.get("priceType") or {}).get("name"): p.get("value") for p in r.get("salePrices") or []},
