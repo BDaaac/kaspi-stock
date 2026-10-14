@@ -2,6 +2,11 @@ name: Остатки с ценами (зашифрованный отчёт)
 
 on:
   workflow_dispatch:
+    inputs:
+      moment:
+        description: "Остаток на дату (YYYY-MM-DD HH:MM:SS), пусто — сейчас"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -11,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MOMENT: ${{ inputs.moment }}
     steps:
       - uses: actions/checkout@v4
       - run: python3 stock_value.py
