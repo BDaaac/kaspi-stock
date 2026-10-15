@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-14 21:42">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-15 11:11">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -57,7 +57,7 @@
             <model />
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="468" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="466" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5423</cityprice>
@@ -397,7 +397,7 @@
             <model>Лоток-вкладыш , металл</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="247" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="246" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5096</cityprice>
@@ -547,7 +547,7 @@
             <model>Лоток-вкладыш , металл</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="472" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="470" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5369</cityprice>
