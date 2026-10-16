@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-15 18:47">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-16 09:26">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -77,7 +77,7 @@
             <model>Толкатель DTC MSB01F01(H03), 1 шт, пластик, сталь, белый</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="21729" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="21529" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">392</cityprice>
@@ -557,7 +557,7 @@
             <model>Толкатель DTC MSB01F01(H10), 1 шт, пластик, сталь, серый</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="16027" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="15827" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">392</cityprice>
@@ -1187,7 +1187,7 @@
             <model>DTC D-Motion/400мм GG10C400H направляющие с доводчиком скрытого монтажа , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="11" />
+                <availability available="no" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3472</cityprice>
@@ -1197,7 +1197,7 @@
             <model />
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="7818" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="7768" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3642</cityprice>
