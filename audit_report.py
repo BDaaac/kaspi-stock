@@ -17,7 +17,7 @@ for env in ("MS_ORDERS_TOKEN", "MS_TOKEN"):
             d = http("GET", f"{MS_API}/audit?filter={f}&limit=100&offset={offset}", h)
             rows = d.get("rows") or []
             for ctx in rows:
-                ev = http("GET", ctx["events"]["meta"]["href"] + "?limit=100", h)
+                ev = http("GET", f"{MS_API}/audit/{ctx['id']}/events?limit=100", h)
                 out["contexts"].append({"ctx": {k: ctx.get(k) for k in ("moment", "uid", "source", "info", "entityType", "eventType", "objectCount")},
                                         "events": [{k: e.get(k) for k in ("moment", "uid", "source", "eventType", "entityType", "objectType", "name", "diff", "additionalInfo")}
                                                    for e in ev.get("rows") or []]})
