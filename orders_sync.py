@@ -354,7 +354,12 @@ def ms_find_manual(agent, pos, desc, ext, created):
         if (o.get("externalCode") or "").startswith(("kaspi-", "ozon-", "ozonfbo-")):
             continue
         num = desc.splitlines()[0].replace("Заказ №", "").strip()
-        if num and num in (o.get("description") or ""):
+        texts = [o.get("description") or ""]
+        if num and num not in texts[0]:
+            # номер могли записать в комментарий отгрузки, а не заказа
+            for dm in o.get("demands") or []:
+                texts.append(http("GET", dm["meta"]["href"], ms_headers()).get("description") or "")
+        if num and any(num in t for t in texts):
             match = True
         else:
             have = {}
