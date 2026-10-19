@@ -7,6 +7,10 @@ on:
         description: "Записывать в МойСклад (иначе только отчёт)"
         type: boolean
         default: false
+      audit_hours:
+        description: "Контроль отгрузок: за сколько часов смотреть журнал"
+        type: string
+        default: "3"
 
 permissions:
   contents: write
@@ -30,6 +34,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Заказы
         run: python3 orders_sync.py
+      - name: Контроль отгрузок
+        if: ${{ !cancelled() }}
+        env:
+          AUDIT_HOURS: ${{ inputs.audit_hours }}
+        run: python3 check_demands.py | tee -a orders_report.md
       - name: Отчёт в ветку reports
         if: ${{ !cancelled() }}
         run: |

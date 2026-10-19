@@ -39,6 +39,12 @@ jobs:
           AUTO_ACCEPT: "1"
           AUTO_DEMAND: "1"
         run: python3 orders_sync.py
+      - name: Контроль отгрузок (удаление позиций с ТСД)
+        if: ${{ !cancelled() }}
+        env:
+          DRY_RUN: "0"
+          AUDIT_HOURS: "3"
+        run: python3 check_demands.py
       - name: Kaspi — собрать прайс
         if: ${{ !cancelled() }}
         run: python3 build_feed.py
