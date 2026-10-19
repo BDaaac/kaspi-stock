@@ -51,7 +51,7 @@ class HttpError(Exception):
     pass
 
 
-def http(method, url, headers=None, body=None, raw=False):
+def http(method, url, headers=None, body=None, raw=False, _try=0):
     data = None if body is None else (body if isinstance(body, bytes) else json.dumps(body).encode())
     req = urllib.request.Request(url, data=data, method=method, headers=headers or {})
     try:
@@ -65,6 +65,13 @@ def http(method, url, headers=None, body=None, raw=False):
                 return content, ctype
             return json.loads(content) if content else {}
     except urllib.error.HTTPError as e:
+        if e.code == 429 and _try < 6:  # лимит запросов (Ozon/МС) — подождать и повторить
+            try:
+                wait = float(e.headers.get("Retry-After") or 0)
+            except ValueError:
+                wait = 0
+            time.sleep(max(wait, min(2 ** _try, 20)))
+            return http(method, url, headers, body, raw, _try + 1)
         raise HttpError(f"{method} {url.split('?')[0]} -> HTTP {e.code}: {e.read().decode(errors='replace')[:300]}")
 
 
