@@ -4,6 +4,7 @@ from orders_sync import MS_API, http
 
 FROM = os.environ.get("AUDIT_FROM", "2026-10-09 12:00:00")
 TO = os.environ.get("AUDIT_TO", "2026-10-09 18:00:00")
+EXTRA = os.environ.get("AUDIT_FILTER", "").strip()  # напр. entityType=demand;source=remap-1.2
 out = {"from": FROM, "to": TO, "contexts": []}
 for env in ("MS_ORDERS_TOKEN", "MS_TOKEN"):
     tok = os.environ.get(env, "").strip()
@@ -11,7 +12,7 @@ for env in ("MS_ORDERS_TOKEN", "MS_TOKEN"):
         continue
     h = {"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip"}
     try:
-        f = urllib.parse.quote(f"moment>={FROM};moment<={TO}", safe="")
+        f = urllib.parse.quote(f"moment>={FROM};moment<={TO}" + (";" + EXTRA if EXTRA else ""), safe="")
         offset = 0
         while True:
             d = http("GET", f"{MS_API}/audit?filter={f}&limit=100&offset={offset}", h)

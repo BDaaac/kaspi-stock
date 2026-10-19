@@ -5,6 +5,7 @@ on:
     inputs:
       date_from: {description: "С (YYYY-MM-DD HH:MM:SS)", type: string, default: "2026-10-09 12:00:00"}
       date_to: {description: "По (YYYY-MM-DD HH:MM:SS)", type: string, default: "2026-10-09 18:00:00"}
+      extra: {description: "Доп. фильтр (entityType=demand;source=remap-1.2)", type: string, default: ""}
 
 permissions:
   contents: write
@@ -17,6 +18,7 @@ jobs:
       MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
       AUDIT_FROM: ${{ inputs.date_from }}
       AUDIT_TO: ${{ inputs.date_to }}
+      AUDIT_FILTER: ${{ inputs.extra }}
     steps:
       - uses: actions/checkout@v4
       - run: python3 audit_report.py
