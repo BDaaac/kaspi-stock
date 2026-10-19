@@ -51,7 +51,16 @@ class HttpError(Exception):
     pass
 
 
+_OZON_LAST = [0.0]
+OZON_GAP = 1.0  # сек между запросами к Ozon (лимит в секунду общий на ключ)
+
+
 def http(method, url, headers=None, body=None, raw=False, _try=0):
+    if url.startswith(OZON_API):
+        gap = OZON_GAP - (time.time() - _OZON_LAST[0])
+        if gap > 0:
+            time.sleep(gap)
+        _OZON_LAST[0] = time.time()
     data = None if body is None else (body if isinstance(body, bytes) else json.dumps(body).encode())
     req = urllib.request.Request(url, data=data, method=method, headers=headers or {})
     try:
@@ -65,12 +74,12 @@ def http(method, url, headers=None, body=None, raw=False, _try=0):
                 return content, ctype
             return json.loads(content) if content else {}
     except urllib.error.HTTPError as e:
-        if e.code == 429 and _try < 6:  # лимит запросов (Ozon/МС) — подождать и повторить
+        if e.code == 429 and _try < 8:  # лимит запросов (Ozon/МС) — подождать и повторить
             try:
                 wait = float(e.headers.get("Retry-After") or 0)
             except ValueError:
                 wait = 0
-            time.sleep(max(wait, min(2 ** _try, 20)))
+            time.sleep(max(wait, min(2 ** (_try + 1), 30)))
             return http(method, url, headers, body, raw, _try + 1)
         raise HttpError(f"{method} {url.split('?')[0]} -> HTTP {e.code}: {e.read().decode(errors='replace')[:300]}")
 
@@ -151,18 +160,36 @@ def ozon_fbs():
         offset += 100
 
 
+def _ozon_price(v):
+    """v3 отдаёт цену объектом {amount, currency}; старые методы — строкой."""
+    if isinstance(v, dict):
+        return v.get("amount") if v.get("amount") is not None else v.get("value")
+    return v
+
+
 def ozon_fbo():
+    """FBO-отправления: /v3/posting/fbo/list (v2 Ozon отключил), постранично по cursor."""
     now = datetime.now(timezone.utc)
-    out, offset = [], 0
-    while True:
-        body = {"dir": "ASC", "limit": 100, "offset": offset,
-                "filter": {"since": iso(now - timedelta(days=DAYS)), "to": iso(now)}}
-        d = http("POST", f"{OZON_API}/v2/posting/fbo/list", ozon_headers(), body)
-        rows = d.get("result") or []
+    out, cursor = [], ""
+    for _ in range(100):
+        body = {"sort_dir": "asc", "cursor": cursor, "limit": 100,
+                "filter": {"since": iso(now - timedelta(days=DAYS)), "to": iso(now)}, "with": {}}
+        d = http("POST", f"{OZON_API}/v3/posting/fbo/list", ozon_headers(), body)
+        res = d.get("result") if isinstance(d.get("result"), dict) else d
+        rows = res.get("postings")
+        if not isinstance(rows, list):
+            raise HttpError(f"Ozon FBO: неизвестный формат ответа: {str(d)[:200]}")
+        for p in rows:
+            for x in p.get("products") or []:
+                x["price"] = _ozon_price(x.get("price"))
         out.extend(rows)
-        if len(rows) < 100:
+        nxt = res.get("cursor") or ""
+        if not res.get("has_next"):
             return out
-        offset += 100
+        if not nxt or nxt == cursor:
+            raise HttpError("Ozon FBO: курсор не сдвинулся")
+        cursor = nxt
+    raise HttpError("Ozon FBO: больше 100 страниц")
 
 
 # ---------------- Этикетки ----------------
