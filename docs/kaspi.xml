@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-19 09:54">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-19 10:12">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -1197,7 +1197,7 @@
             <model />
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="7468" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="7568" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3642</cityprice>
