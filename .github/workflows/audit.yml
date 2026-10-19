@@ -1,0 +1,31 @@
+name: Журнал аудита МС (зашифрованный отчёт)
+
+on:
+  workflow_dispatch:
+    inputs:
+      date_from: {description: "С (YYYY-MM-DD HH:MM:SS)", type: string, default: "2026-10-09 12:00:00"}
+      date_to: {description: "По (YYYY-MM-DD HH:MM:SS)", type: string, default: "2026-10-09 18:00:00"}
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      AUDIT_FROM: ${{ inputs.date_from }}
+      AUDIT_TO: ${{ inputs.date_to }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 audit_report.py
+      - name: Зашифровать и сохранить в ветку private-reports
+        run: |
+          openssl cms -encrypt -binary -aes256 -in audit.json -out /tmp/audit.enc -outform DER report_cert.pem
+          rm audit.json
+          git switch --orphan private-reports
+          cp /tmp/audit.enc audit.enc
+          git add audit.enc
+          git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -qm "Зашифрованный журнал аудита"
+          git push -f origin private-reports
