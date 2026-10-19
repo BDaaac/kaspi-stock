@@ -201,6 +201,7 @@ COMPONENT_RULES = [
 ]
 PRICE_FALLBACK = {"STW83": 493}  # тг, если розничную цену не удалось прочитать из МС
 COMPONENT_PRICES = {}  # код -> розничная цена в тиынах, заполняется в ms_products()
+COMPONENT_IDS = set()  # id карточек комплектующих (для сравнения с ручными заказами)
 COMPONENT_CODES = {c for _, comps in COMPONENT_RULES for c, _ in comps}
 
 
@@ -301,6 +302,7 @@ def ms_products():
             if code:
                 out.setdefault(code, []).append(r["meta"])
             if code in COMPONENT_CODES:
+                COMPONENT_IDS.add(r["meta"]["href"].rsplit("/", 1)[-1])
                 prices = [p for p in r.get("salePrices") or [] if p.get("value")]
                 retail = [p for p in prices if "розн" in ((p.get("priceType") or {}).get("name") or "").lower()]
                 pick = (retail or prices or [None])[0]
@@ -309,6 +311,42 @@ def ms_products():
         if len(rows) < 1000:
             return out
         offset += 1000
+
+
+def ms_find_manual(agent, pos, desc, ext, created):
+    """Заказ, оформленный вручную (без нашего внешнего кода), с тем же контрагентом и теми же товарами.
+    Если найден — привязываем его (внешний код + номер в комментарии), чтобы не создать дубль."""
+    want = {}
+    for p in pos:
+        k = p["assortment"]["meta"]["href"].rsplit("/", 1)[-1]
+        want[k] = want.get(k, 0) + float(p["quantity"])
+    since = (datetime.now(timezone(timedelta(hours=3))) - timedelta(days=DAYS + 1)).strftime("%Y-%m-%d %H:%M:%S")
+    f = urllib.parse.quote(f"agent={MS_API}/entity/counterparty/{agent};moment>={since}", safe="")
+    rows = http("GET", f"{MS_API}/entity/customerorder?filter={f}&limit=100", ms_headers()).get("rows") or []
+    for o in rows:
+        if (o.get("externalCode") or "").startswith(("kaspi-", "ozon-", "ozonfbo-")):
+            continue
+        num = desc.splitlines()[0].replace("Заказ №", "").strip()
+        if num and num in (o.get("description") or ""):
+            match = True
+        else:
+            have = {}
+            for p in http("GET", o["meta"]["href"] + "/positions?limit=1000", ms_headers()).get("rows") or []:
+                k = p["assortment"]["meta"]["href"].rsplit("/", 1)[-1]
+                have[k] = have.get(k, 0) + float(p.get("quantity") or 0)
+            # все основные товары площадки есть в ручном заказе в том же количестве
+            main = {k: q for k, q in want.items() if k not in COMPONENT_IDS}
+            match = bool(main) and all(abs(have.get(k, 0) - q) < 1e-6 for k, q in main.items())
+        if match:
+            if not DRY_RUN:
+                upd = {"externalCode": ext}
+                if desc.splitlines()[0] not in (o.get("description") or ""):
+                    upd["description"] = ((o.get("description") or "") + "\n" + desc).strip()
+                http("PUT", o["meta"]["href"], ms_headers(), upd)
+                o = http("GET", o["meta"]["href"], ms_headers())
+            log(f"{ext}: найден заказ, оформленный вручную, №{o.get('name')} — привязан, дубль не создаю")
+            return o
+    return None
 
 
 def ms_existing(external_code):
@@ -564,6 +602,8 @@ def main():
                           for it in items)
         try:
             existing = ms_existing(ext) if products else None
+            if not existing and products and active and not problems and pos:
+                existing = ms_find_manual(agent, pos, desc, ext, created)
         except Exception as e:
             existing, problems = None, problems + [str(e)]
         if problems:
