@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode: {description: "list или replace", type: string, default: "list"}
+      only: {description: "Только эти коды (через запятую), пусто — все", type: string, default: ""}
       branch: {description: "Ветка с файлами (upload/ + product_files_plan.json)", type: string, default: "product-files"}
 
 permissions:
@@ -16,6 +17,7 @@ jobs:
       MS_TOKEN: ${{ secrets.MS_TOKEN }}
       MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
       MODE: ${{ inputs.mode }}
+      ONLY: ${{ inputs.only }}
     steps:
       - uses: actions/checkout@v4
       - name: Файлы из ветки
