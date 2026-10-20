@@ -25,11 +25,12 @@ jobs:
           git fetch -q origin ${{ inputs.branch }}
           git checkout FETCH_HEAD -- upload product_files_plan.json && git reset -q
       - run: python3 product_files.py
-      - name: Отчёт в ветку reports
+      - name: Отчёт в ветку files-report
         if: always()
         run: |
           cp product_files_report.md /tmp/r.md || exit 0
-          git fetch -q origin reports && git switch -q -c rep FETCH_HEAD
+          git switch -q --orphan files-report
           cp /tmp/r.md product_files_report.md
           git add product_files_report.md
-          git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -qm "Отчёт: файлы карточек" && git push -q origin HEAD:reports
+          git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -qm "Отчёт: файлы карточек"
+          git push -q -f origin files-report
