@@ -1,0 +1,33 @@
+name: Файлы в карточках товаров МС
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode: {description: "list или replace", type: string, default: "list"}
+      branch: {description: "Ветка с файлами (upload/ + product_files_plan.json)", type: string, default: "product-files"}
+
+permissions:
+  contents: write
+
+jobs:
+  files:
+    runs-on: ubuntu-latest
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Файлы из ветки
+        run: |
+          git fetch -q origin ${{ inputs.branch }}
+          git checkout FETCH_HEAD -- upload product_files_plan.json && git reset -q
+      - run: python3 product_files.py
+      - name: Отчёт в ветку reports
+        if: always()
+        run: |
+          cp product_files_report.md /tmp/r.md || exit 0
+          git fetch -q origin reports && git switch -q -c rep FETCH_HEAD
+          cp /tmp/r.md product_files_report.md
+          git add product_files_report.md
+          git -c user.name="kaspi-stock-bot" -c user.email="actions@users.noreply.github.com" commit -qm "Отчёт: файлы карточек" && git push -q origin HEAD:reports
