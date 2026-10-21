@@ -151,17 +151,28 @@ def iso(dt):
 
 
 def ozon_fbs():
+    """FBS-отправления: /v4/posting/fbs/list (v3 Ozon отключил), постранично по cursor."""
     now = datetime.now(timezone.utc)
-    out, offset = [], 0
-    while True:
-        body = {"dir": "ASC", "limit": 100, "offset": offset,
+    out, cursor = [], ""
+    for _ in range(100):
+        body = {"sort_dir": "asc", "cursor": cursor, "limit": 100,
                 "filter": {"since": iso(now - timedelta(days=DAYS)), "to": iso(now)}, "with": {}}
-        d = http("POST", f"{OZON_API}/v3/posting/fbs/list", ozon_headers(), body)
-        res = d.get("result") or {}
-        out.extend(res.get("postings") or [])
+        d = http("POST", f"{OZON_API}/v4/posting/fbs/list", ozon_headers(), body)
+        res = d.get("result") if isinstance(d.get("result"), dict) else d
+        rows = res.get("postings")
+        if not isinstance(rows, list):
+            raise HttpError(f"Ozon FBS: неизвестный формат ответа: {str(d)[:300]}")
+        for p in rows:
+            for x in p.get("products") or []:
+                x["price"] = _ozon_price(x.get("price"))
+        out.extend(rows)
+        nxt = res.get("cursor") or ""
         if not res.get("has_next"):
             return out
-        offset += 100
+        if not nxt or nxt == cursor:
+            raise HttpError("Ozon FBS: курсор не сдвинулся")
+        cursor = nxt
+    raise HttpError("Ozon FBS: больше 100 страниц")
 
 
 def _ozon_price(v):
