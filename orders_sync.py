@@ -571,7 +571,7 @@ def main():
     except Exception as e:
         log(f"Kaspi: ОШИБКА {e}")
 
-    ozon_skip = os.environ.get("OZON_SKIP") == "1"  # Ozon опрашиваем раз в час (см. update.yml)
+    ozon_skip = os.environ.get("OZON_SKIP") == "1"  # Ozon опрашиваем раз в 40 минут (см. update.yml)
     log("\n## Ozon FBS")
     try:
         if ozon_skip:
