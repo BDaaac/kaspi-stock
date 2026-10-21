@@ -136,6 +136,10 @@ def kaspi_entries(order):
 
 
 # ---------------- Ozon ----------------
+class SkipOzon(Exception):
+    pass
+
+
 def ozon_headers():
     return {"Client-Id": os.environ["OZON_CLIENT_ID"].strip(),
             "Api-Key": os.environ["OZON_API_KEY"].strip(),
@@ -567,8 +571,11 @@ def main():
     except Exception as e:
         log(f"Kaspi: ОШИБКА {e}")
 
+    ozon_skip = os.environ.get("OZON_SKIP") == "1"  # Ozon опрашиваем раз в час (см. update.yml)
     log("\n## Ozon FBS")
     try:
+        if ozon_skip:
+            raise SkipOzon()
         posts = ozon_fbs()
         log(f"отправлений за период: {len(posts)}")
         for p in posts:
@@ -605,11 +612,15 @@ def main():
                     label = (f"ozon-{pn}.pdf", _ship_and_label)
             plans.append((f"ozon-{p['posting_number']}", AGENT_OZON, STORE_ID, p["posting_number"], items, omap,
                           p.get("status"), active, created, label, p.get("status") in OZON_SHIPPED))
+    except SkipOzon:
+        log("пропуск: Ozon опрашивается раз в 60 минут")
     except Exception as e:
         log(f"Ozon FBS: ОШИБКА {e}")
 
     log("\n## Ozon FBO")
     try:
+        if ozon_skip:
+            raise SkipOzon()
         fbo = ozon_fbo()
         log(f"отправлений за период: {len(fbo)}" + ("" if INCLUDE_FBO else " (в заказы не берутся, только проверка доступа)"))
         if INCLUDE_FBO:
@@ -620,6 +631,8 @@ def main():
                               f"{p['posting_number']}\n\nFBO", items, omap, p.get("status"),
                               p.get("status") in OZON_OPEN, p.get("in_process_at") or p.get("created_at"), None,
                               p.get("status") in OZON_SHIPPED))
+    except SkipOzon:
+        log("пропуск: Ozon опрашивается раз в 60 минут")
     except Exception as e:
         log(f"Ozon FBO: ОШИБКА {e}")
 

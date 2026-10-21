@@ -30,6 +30,15 @@ jobs:
       - id: t
         run: echo "started=$(date +%s)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
+      - name: Ozon — пора? (раз в 60 минут)
+        run: |
+          last=$(cat docs/ozon_last.txt 2>/dev/null || echo 0)
+          now=$(date +%s)
+          if [ $(( now - last )) -ge 3480 ]; then
+            echo "OZON_SKIP=0" >> "$GITHUB_ENV"; echo "$now" > docs/ozon_last.txt; echo "Ozon: опрашиваем"
+          else
+            echo "OZON_SKIP=1" >> "$GITHUB_ENV"; echo "Ozon: пропуск, прошло $(( (now - last) / 60 )) мин"
+          fi
       - name: Заказы Kaspi/Ozon → МойСклад
         env:
           DRY_RUN: "0"
@@ -49,7 +58,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: python3 build_feed.py
       - name: Ozon — отправить остатки
-        if: ${{ !cancelled() && env.OZON_API_KEY != '' }}
+        if: ${{ !cancelled() && env.OZON_API_KEY != '' && env.OZON_SKIP != '1' }}
         run: python3 ozon_push.py
       - name: Сохранить, если изменилось
         if: ${{ !cancelled() }}
