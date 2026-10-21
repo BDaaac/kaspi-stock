@@ -613,7 +613,7 @@ def main():
             plans.append((f"ozon-{p['posting_number']}", AGENT_OZON, STORE_ID, p["posting_number"], items, omap,
                           p.get("status"), active, created, label, p.get("status") in OZON_SHIPPED))
     except SkipOzon:
-        log("пропуск: Ozon опрашивается раз в 60 минут")
+        log("пропуск: Ozon опрашивается раз в 40 минут")
     except Exception as e:
         log(f"Ozon FBS: ОШИБКА {e}")
 
@@ -632,7 +632,7 @@ def main():
                               p.get("status") in OZON_OPEN, p.get("in_process_at") or p.get("created_at"), None,
                               p.get("status") in OZON_SHIPPED))
     except SkipOzon:
-        log("пропуск: Ozon опрашивается раз в 60 минут")
+        log("пропуск: Ozon опрашивается раз в 40 минут")
     except Exception as e:
         log(f"Ozon FBO: ОШИБКА {e}")
 
