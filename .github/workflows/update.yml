@@ -30,11 +30,11 @@ jobs:
       - id: t
         run: echo "started=$(date +%s)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
-      - name: Ozon — пора? (раз в 40 минут)
+      - name: Ozon — пора? (каждый цикл, ~15 минут)
         run: |
           last=$(cat docs/ozon_last.txt 2>/dev/null || echo 0)
           now=$(date +%s)
-          if [ $(( now - last )) -ge 2280 ]; then
+          if [ $(( now - last )) -ge 600 ]; then
             echo "OZON_SKIP=0" >> "$GITHUB_ENV"; echo "$now" > docs/ozon_last.txt; echo "Ozon: опрашиваем"
           else
             echo "OZON_SKIP=1" >> "$GITHUB_ENV"; echo "Ozon: пропуск, прошло $(( (now - last) / 60 )) мин"
