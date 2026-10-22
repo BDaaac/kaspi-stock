@@ -355,6 +355,19 @@ def ms_products():
         offset += 1000
 
 
+def _older(ms_created, mp_created, slack_h=2):
+    """True, если документ МС создан заметно раньше заказа площадки (тогда это не он)."""
+    try:
+        a = datetime.strptime((ms_created or "")[:19], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone(timedelta(hours=3)))
+        b = str(mp_created).replace("Z", "+00:00")
+        b = datetime.fromisoformat(b if "T" in b or "+" in b else b)
+        if b.tzinfo is None:
+            b = b.replace(tzinfo=timezone(timedelta(hours=5)))
+        return a < b - timedelta(hours=slack_h)
+    except Exception:
+        return False
+
+
 def ms_find_manual(agent, pos, desc, ext, created):
     """Заказ, оформленный вручную (без нашего внешнего кода), с тем же контрагентом и теми же товарами.
     Если найден — привязываем его (внешний код + номер в комментарии), чтобы не создать дубль."""
@@ -370,12 +383,16 @@ def ms_find_manual(agent, pos, desc, ext, created):
             continue
         num = desc.splitlines()[0].replace("Заказ №", "").strip()
         texts = [o.get("description") or ""]
-        if num and num not in texts[0]:
-            # номер могли записать в комментарий отгрузки, а не заказа
-            for dm in o.get("demands") or []:
-                texts.append(http("GET", dm["meta"]["href"], ms_headers()).get("description") or "")
+        # номер могли записать в комментарий отгрузки, а не заказа
+        for dm in o.get("demands") or []:
+            texts.append(http("GET", dm["meta"]["href"], ms_headers()).get("description") or "")
+        other = set(re.findall(r"\d{5,}-\d{3,4}-\d+", " ".join(texts))) - {num}
         if num and any(num in t for t in texts):
             match = True
+        elif other:
+            continue  # в ручном заказе указан номер другого отправления — это не наш заказ
+        elif _older(o.get("created"), created):
+            continue  # ручной заказ оформлен раньше, чем пришёл заказ площадки
         else:
             have = {}
             for p in http("GET", o["meta"]["href"] + "/positions?limit=1000", ms_headers()).get("rows") or []:

@@ -1,0 +1,22 @@
+name: Исправить привязку ручного заказа (разово)
+
+on:
+  workflow_dispatch:
+    inputs:
+      order: {type: string}
+      ext: {type: string}
+      desc: {type: string}
+      wrong: {type: string}
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    env:
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      ORDER: ${{ inputs.order }}
+      EXT: ${{ inputs.ext }}
+      DESC: ${{ inputs.desc }}
+      WRONG: ${{ inputs.wrong }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 fix_link.py
