@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-26 16:13">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-26 18:21">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -197,7 +197,7 @@
             <model>DTC кондуктор для мебельных петель JB37W 1 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1165" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1065" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">520</cityprice>
@@ -1027,7 +1027,7 @@
             <model>DTC 4587110HX направляющие , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="440" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="400" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2130</cityprice>
@@ -1047,7 +1047,7 @@
             <model>DTC 4587118HX направляющие с доводчиком , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1156" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1056" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3340</cityprice>
@@ -1067,7 +1067,7 @@
             <model>DTC 4587110GX направляющие шариковые , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="387" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="357" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">2230</cityprice>
