@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-27 16:15">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-27 16:51">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -997,7 +997,7 @@
             <model>DTC ST04AH02A подъемный механизм , металл 1 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="93" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="92" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">29140</cityprice>
