@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-27 22:15">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-28 16:04">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -77,7 +77,7 @@
             <model>Толкатель DTC MSB01F01(H03), 1 шт, пластик, сталь, белый</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="21329" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="21328" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">392</cityprice>
