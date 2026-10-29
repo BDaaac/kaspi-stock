@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-28 16:04">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-10-29 13:21">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -47,7 +47,7 @@
             <model>DTC C81B875FAB петля с доводчиком накладная, металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="3850" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="3350" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">1868</cityprice>
@@ -327,7 +327,7 @@
             <model>DTC C81B875FAB петля с доводчиком накладная, металл 4 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1925" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1675" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3736</cityprice>
@@ -427,7 +427,7 @@
             <model />
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="770" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="670" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">9340</cityprice>
@@ -557,7 +557,7 @@
             <model>Толкатель DTC MSB01F01(H10), 1 шт, пластик, сталь, серый</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="14627" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="14427" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">392</cityprice>
@@ -627,7 +627,7 @@
             <model>DTC C81B875FAB петля с доводчиком накладная, металл 6 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1283" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1116" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5604</cityprice>
@@ -957,7 +957,7 @@
             <model>DTC ST05AM02A подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="63" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="61" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">29965</cityprice>
@@ -977,7 +977,7 @@
             <model>DTC ST04AM02A подъемный механизм , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="41" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="39" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">29140</cityprice>
@@ -997,7 +997,7 @@
             <model>DTC ST04AH02A подъемный механизм , металл 1 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="92" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="90" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">29140</cityprice>
@@ -1057,7 +1057,7 @@
             <model>DTC 4587120HX направляющие с доводчиком , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="397" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="396" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3690</cityprice>
@@ -1097,7 +1097,7 @@
             <model>DTC C81B875FAB петля с доводчиком накладная, металл 8 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="962" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="837" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">7472</cityprice>
@@ -1157,7 +1157,7 @@
             <model>DTC D-Motion/500мм GG10C500H1 направляющие с доводчиком скрытого монтажа , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="400" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="350" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3873</cityprice>
@@ -1177,7 +1177,7 @@
             <model>DTC D-Motion/300мм GG10C300H1 направляющие с доводчиком скрытого монтажа , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="253" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="233" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3034</cityprice>
