@@ -21,10 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Файлы из ветки
+        if: inputs.mode != 'audit'
         run: |
           git fetch -q origin ${{ inputs.branch }}
           git checkout FETCH_HEAD -- upload product_files_plan.json && git reset -q
       - run: python3 product_files.py
+        if: inputs.mode != 'audit'
+      - run: python3 files_audit.py
+        if: inputs.mode == 'audit'
       - name: Отчёт в ветку files-report
         if: always()
         run: |
