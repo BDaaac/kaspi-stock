@@ -33,7 +33,19 @@ for src, p in PLAN.items():
         if MODE == "replace":
           try:
             removed = []
-            http("POST", url, H, [{"filename": p["name"], "content": content}])  # сначала новый файл
+            before = {x["meta"]["href"] for x in files}
+            for attempt in range(4):  # МС иногда отвечает 502/таймаутом на больших файлах
+                try:
+                    http("POST", url, H, [{"filename": p["name"], "content": content}])  # сначала новый файл
+                    break
+                except Exception:
+                    import time
+                    time.sleep(15)
+                    now = http("GET", url + "?limit=100", H).get("rows") or []
+                    if any(x["meta"]["href"] not in before and (x.get("filename") or x.get("title")) == p["name"] for x in now):
+                        break  # файл всё-таки загрузился
+                    if attempt == 3:
+                        raise
             for x in files:  # потом старые (из списка «было»)
                 fn = (x.get("filename") or x.get("title") or "")
                 if fn == p["name"] or any(s.lower() in fn.lower() for s in p.get("delete", [])):
