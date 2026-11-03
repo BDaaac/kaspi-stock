@@ -208,9 +208,49 @@ def ozon_fbo():
 
 
 # ---------------- Этикетки ----------------
+def ozon_label_async(posting_number):
+    """Запасной путь: асинхронное задание на этикетку (если синхронный метод упирается в 429)."""
+    tid = None
+    for ver in ("v2", "v1"):
+        try:
+            d = http("POST", f"{OZON_API}/{ver}/posting/fbs/package-label/create", ozon_headers(),
+                     {"posting_number": [posting_number]})
+        except HttpError as e:
+            last = e
+            continue
+        r = d.get("result") or {}
+        tasks = r.get("tasks") if isinstance(r, dict) else None
+        if tasks:
+            big = [x for x in tasks if str(x.get("task_type", "")).lower() == "big_label"]
+            tid = (big or tasks)[0].get("task_id")
+        else:
+            tid = r.get("task_id") if isinstance(r, dict) else None
+        if tid:
+            break
+    if not tid:
+        raise HttpError(f"Ozon этикетка {posting_number}: не удалось создать задание ({locals().get('last')})")
+    for _ in range(12):
+        time.sleep(5)
+        d = http("POST", f"{OZON_API}/v1/posting/fbs/package-label/get", ozon_headers(), {"task_id": tid})
+        r = d.get("result") or {}
+        st = str(r.get("status", "")).lower()
+        if r.get("file_url"):
+            with urllib.request.urlopen(r["file_url"], timeout=60) as f:
+                return f.read()
+        if st in ("error", "failed"):
+            raise HttpError(f"Ozon этикетка {posting_number}: задание {tid} завершилось ошибкой: {str(r)[:200]}")
+    raise HttpError(f"Ozon этикетка {posting_number}: задание {tid} не готово — заберу в следующем цикле")
+
+
 def ozon_label(posting_number):
-    content, ctype = http("POST", f"{OZON_API}/v2/posting/fbs/package-label", ozon_headers(),
-                          {"posting_number": [posting_number]}, raw=True)
+    try:
+        content, ctype = http("POST", f"{OZON_API}/v2/posting/fbs/package-label", ozon_headers(),
+                              {"posting_number": [posting_number]}, raw=True, _try=6)
+    except HttpError as e:
+        if "HTTP 429" not in str(e):
+            raise
+        print(f"Ozon этикетка {posting_number}: синхронный метод 429, беру через задание")
+        return ozon_label_async(posting_number)
     if "json" in ctype:  # некоторые версии отдают PDF внутри JSON
         d = json.loads(content)
         b64 = d.get("file_content") or (d.get("result") or {}).get("file_content")
