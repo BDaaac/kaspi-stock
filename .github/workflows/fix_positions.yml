@@ -1,0 +1,20 @@
+name: Пересобрать позиции заказа (разово)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ext: {type: string}
+      items: {type: string}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      EXT: ${{ inputs.ext }}
+      ITEMS: ${{ inputs.items }}
+      DRY_RUN: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 fix_positions.py
