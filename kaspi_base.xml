@@ -1243,5 +1243,45 @@
                 <cityprice cityId="750000000">6261</cityprice>
             </cityprices>
         </offer>
+        <offer sku="794879634">
+            <model>Держатель для одежды металл, 11.5x44.6x11.5 см</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">18890</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="244572136">
+            <model>Вешалка для брюк 244572136 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">22557</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="064659532">
+            <model>Вешалка для брюк 064659532 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">28393</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="624594428">
+            <model>Вешалка для брюк 30337612_624594428 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">24357</cityprice>
+            </cityprices>
+        </offer>
     </offers>
 </kaspi_catalog>
