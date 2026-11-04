@@ -280,6 +280,7 @@ def ms_available():
 COMPONENT_RULES = [
     (re.compile(r"^ST0\d+A[HML]02[AB]$"), [("STW83", 1)]),                          # подъёмники Top Stay ST
     (re.compile(r"^C81[A-Z0-9]+FAB$"), [("81T20TQA", 1), ("G10H", 1), ("S18HH", 1)]),  # петли Pivot Star
+    (re.compile(r"^C80[ABC]678F$"), [("89H00EQ", 1), ("S18HH", 1)]),               # петли Pivot Pro для алюм. рамки
 ]
 PRICE_FALLBACK = {"STW83": 493}  # тг, если розничную цену не удалось прочитать из МС
 COMPONENT_PRICES = {}  # код -> розничная цена в тиынах, заполняется в ms_products()
