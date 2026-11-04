@@ -786,10 +786,9 @@ def main():
         if label and order_href:
             try:
                 log(f"| | {desc.splitlines()[0]} | | | | | {ms_attach_label(order_href, label[0], label[1])} |")
-            except Exception as e:
+            except Exception as e:  # этикетка не мешает отгрузке — заберём её в следующем цикле
                 errors_n += 1
                 log(f"ОШИБКА этикетки {ext}: {e}")
-                continue
             if AUTO_DEMAND and existing and status not in ("cancelled", "CANCELLED", "CANCELLING"):
                 try:
                     log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=False, store=store if ext.startswith('ozonfbo-') else None)} |")
