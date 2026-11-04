@@ -1283,5 +1283,25 @@
                 <cityprice cityId="750000000">24357</cityprice>
             </cityprices>
         </offer>
+        <offer sku="620680052">
+            <model>Пантограф прямоугольная 620680052 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">20052</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="243751650">
+            <model>Пантограф прямоугольная 243751650 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="0" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">20052</cityprice>
+            </cityprices>
+        </offer>
     </offers>
 </kaspi_catalog>
