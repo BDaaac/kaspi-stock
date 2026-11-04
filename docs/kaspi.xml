@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-11-04 15:09">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-11-04 15:58">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -867,7 +867,7 @@
             <model>Кронштейн универсальный видимый DTC 0DM05, металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="3692" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="2692" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">915</cityprice>
@@ -877,7 +877,7 @@
             <model>Кронштейн универсальный видимый DTC 0DM05 (4комплекта), металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="923" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="673" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3660</cityprice>
@@ -887,7 +887,7 @@
             <model>Кронштейн универсальный видимый DTC 0DM05 (6шт комплект), металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="615" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="448" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">5490</cityprice>
@@ -897,7 +897,7 @@
             <model>Кронштейн универсальный видимый DTC 0DM05 (10 комплектов), металл</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="369" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="269" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">9150</cityprice>
@@ -1047,7 +1047,7 @@
             <model>DTC 4587118HX направляющие с доводчиком , металл 2 шт</model>
             <brand>dtc</brand>
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="1006" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="956" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">3340</cityprice>
@@ -1241,6 +1241,66 @@
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">6261</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="794879634">
+            <model>Держатель для одежды металл, 11.5x44.6x11.5 см</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="12" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">18890</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="244572136">
+            <model>Вешалка для брюк 244572136 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="32" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">22557</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="064659532">
+            <model>Вешалка для брюк 064659532 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="30" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">28393</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="624594428">
+            <model>Вешалка для брюк 30337612_624594428 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="32" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">24357</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="620680052">
+            <model>Пантограф прямоугольная 620680052 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="2295" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">20052</cityprice>
+            </cityprices>
+        </offer>
+        <offer sku="243751650">
+            <model>Пантограф прямоугольная 243751650 графит</model>
+            <brand />
+            <availabilities>
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="532" />
+            </availabilities>
+            <cityprices>
+                <cityprice cityId="750000000">20052</cityprice>
             </cityprices>
         </offer>
     </offers>
