@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-11-06 12:53">
+<kaspi_catalog xmlns="kaspiShopping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kaspi.kz/kaspishopping.xsd" date="2026-11-06 15:03">
     <company>30337612</company>
     <merchantid>30337612</merchantid>
     <offers>
@@ -1247,7 +1247,7 @@
             <model>Держатель для одежды металл, 11.5x44.6x11.5 см</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="12" />
+                <availability available="no" storeId="30337612_PP1" preOrder="0" stockCount="0" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">18890</cityprice>
@@ -1257,7 +1257,7 @@
             <model>Вешалка для брюк 244572136 графит</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="31" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="6" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">22557</cityprice>
@@ -1267,7 +1267,7 @@
             <model>Вешалка для брюк 064659532 графит</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="30" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="5" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">28393</cityprice>
@@ -1277,7 +1277,7 @@
             <model>Вешалка для брюк 30337612_624594428 графит</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="27" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="2" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">24357</cityprice>
@@ -1287,7 +1287,7 @@
             <model>Пантограф прямоугольная 620680052 графит</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="2277" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="2193" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">20052</cityprice>
@@ -1297,7 +1297,7 @@
             <model>Пантограф прямоугольная 243751650 графит</model>
             <brand />
             <availabilities>
-                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="520" />
+                <availability available="yes" storeId="30337612_PP1" preOrder="0" stockCount="466" />
             </availabilities>
             <cityprices>
                 <cityprice cityId="750000000">20052</cityprice>
