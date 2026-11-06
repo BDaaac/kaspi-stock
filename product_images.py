@@ -24,7 +24,14 @@ for p in sel:
         req = urllib.request.Request(href, headers={"Authorization": f"Bearer {tok}"})
         ext = os.path.splitext(im.get("filename") or "")[1] or ".jpg"
         d = os.path.join("images", code); os.makedirs(d, exist_ok=True)
-        with urllib.request.urlopen(req, timeout=120) as r, open(os.path.join(d, f"{code}_{i}{ext}"), "wb") as f:
-            f.write(r.read())
+        for attempt in range(4):
+            try:
+                with urllib.request.urlopen(req, timeout=120) as r, open(os.path.join(d, f"{code}_{i}{ext}"), "wb") as f:
+                    f.write(r.read())
+                break
+            except Exception as e:
+                if attempt == 3:
+                    log.append(f"{code}\tОШИБКА фото {i}: {e}")
+                import time; time.sleep(10)
 open("images/_список.tsv", "w").write("код\tгруппа\tфото\tнаименование\n" + "\n".join(log) + "\n")
 print(f"товаров: {len(sel)}, с фото: {sum(1 for l in log if l.split(chr(9))[2] != '0')}")

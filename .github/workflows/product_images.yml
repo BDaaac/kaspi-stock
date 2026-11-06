@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 product_images.py
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: images
           path: images
