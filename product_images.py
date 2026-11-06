@@ -1,9 +1,32 @@
 """Скачать фото товаров МС, у которых путь группы содержит GROUP, в папку images/<код>/."""
-import os, re, urllib.parse, urllib.request
+import os, re, urllib.error, urllib.parse, urllib.request
 from orders_sync import MS_API, http
 
 tok = (os.environ.get("MS_ORDERS_TOKEN") or os.environ.get("MS_TOKEN") or "").strip()
 H = {"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip"}
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k):
+        return None
+
+
+_opener = urllib.request.build_opener(_NoRedirect)
+
+
+def download(href):
+    """МС отдаёт файл редиректом на хранилище: туда токен слать нельзя (иначе 415)."""
+    req = urllib.request.Request(href, headers={"Authorization": f"Bearer {tok}"})
+    try:
+        with _opener.open(req, timeout=120) as r:
+            return r.read()
+    except urllib.error.HTTPError as e:
+        loc = e.headers.get("Location")
+        if e.code in (301, 302, 303, 307, 308) and loc:
+            with urllib.request.urlopen(urllib.request.Request(loc), timeout=120) as r:
+                return r.read()
+        raise
+
 GROUP = os.environ["GROUP"].lower()
 os.makedirs("images", exist_ok=True)
 rows, off = [], 0
@@ -21,13 +44,13 @@ for p in sel:
     log.append(f"{code}\t{p.get('pathName')}\t{len(imgs)}\t{p.get('name')}")
     for i, im in enumerate(imgs, 1):
         href = im["meta"]["downloadHref"]
-        req = urllib.request.Request(href, headers={"Authorization": f"Bearer {tok}"})
         ext = os.path.splitext(im.get("filename") or "")[1] or ".jpg"
         d = os.path.join("images", code); os.makedirs(d, exist_ok=True)
         for attempt in range(4):
             try:
-                with urllib.request.urlopen(req, timeout=120) as r, open(os.path.join(d, f"{code}_{i}{ext}"), "wb") as f:
-                    f.write(r.read())
+                data = download(href)
+                with open(os.path.join(d, f"{code}_{i}{ext}"), "wb") as f:
+                    f.write(data)
                 break
             except Exception as e:
                 if attempt == 3:
