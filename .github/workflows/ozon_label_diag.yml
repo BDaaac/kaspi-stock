@@ -1,0 +1,17 @@
+name: Ozon — диагностика этикетки
+
+on:
+  workflow_dispatch:
+    inputs:
+      pn: {type: string}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      OZON_CLIENT_ID: ${{ secrets.OZON_CLIENT_ID }}
+      OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
+      PN: ${{ inputs.pn }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 ozon_label_diag.py
