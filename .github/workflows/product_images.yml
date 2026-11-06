@@ -8,13 +8,14 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       MS_TOKEN: ${{ secrets.MS_TOKEN }}
       MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
       GROUP: ${{ inputs.group }}
     steps:
       - uses: actions/checkout@v4
-      - run: python3 product_images.py
+      - run: python3 -u product_images.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
