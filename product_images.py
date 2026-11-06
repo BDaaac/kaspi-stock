@@ -61,4 +61,4 @@ for p in sel:
                     log.append(f"{code}\tОШИБКА фото {i}: {e}")
                 import time; time.sleep(3)
 open("images/_список.tsv", "w").write("код\tгруппа\tфото\tнаименование\n" + "\n".join(log) + "\n")
-print(f"товаров: {len(sel)}, с фото: {sum(1 for l in log if l.split(chr(9))[2] != '0')}")
+print(f"товаров: {len(sel)}, с фото: {sum(1 for l in log if len(l.split(chr(9))) > 3 and l.split(chr(9))[2] != '0')}")
