@@ -16,7 +16,7 @@ _opener = urllib.request.build_opener(_NoRedirect)
 
 def download(href):
     """МС отдаёт файл редиректом на хранилище: туда токен слать нельзя (иначе 415)."""
-    req = urllib.request.Request(href, headers={"Authorization": f"Bearer {tok}"})
+    req = urllib.request.Request(href, headers={"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip"})
     try:
         with _opener.open(req, timeout=30) as r:
             return r.read()
