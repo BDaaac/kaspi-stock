@@ -1,0 +1,22 @@
+name: Фото товаров МС
+
+on:
+  workflow_dispatch:
+    inputs:
+      group: {description: "Часть пути группы товаров", type: string}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      GROUP: ${{ inputs.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 product_images.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: images
+          path: images
+          retention-days: 3
