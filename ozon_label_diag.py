@@ -10,7 +10,7 @@ def post(path, body):
             b = r.read(); print(path, r.status, b[:600].decode("utf-8", "replace")); return json.loads(b)
     except urllib.error.HTTPError as e:
         print(path, e.code, e.read()[:600].decode("utf-8", "replace")); return {}
-d = post("/v3/posting/fbs/package-label/create", {"posting_number": [pn]})
+d = post("/v3/posting/fbs/package-label/create", {"posting_numbers": [pn]})
 r = d.get("result") or d
 tasks = r.get("tasks") or ([r] if r.get("task_id") else [])
 for t in tasks:
