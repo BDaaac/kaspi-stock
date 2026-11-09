@@ -1,33 +1,35 @@
-"""Какие наименования товаров МС менялись за последние N дней (журнал аудита, поле name)."""
-import datetime, json, os, urllib.parse
+"""Какие наименования товаров МС менялись за последние N дней (аудит по каждому изменённому товару)."""
+import datetime, os, urllib.parse
 from orders_sync import MS_API, http
 
 DAYS = int(os.environ.get("DAYS") or 21)
-since = (datetime.datetime.utcnow() + datetime.timedelta(hours=5) - datetime.timedelta(days=DAYS)).strftime("%Y-%m-%d %H:%M:%S")
+since = (datetime.datetime.utcnow() + datetime.timedelta(hours=3) - datetime.timedelta(days=DAYS)).strftime("%Y-%m-%d %H:%M:%S")
 tok = (os.environ.get("MS_ORDERS_TOKEN") or os.environ.get("MS_TOKEN") or "").strip()
 H = {"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip"}
-flt = urllib.parse.quote(f"moment>={since};entityType=product;eventType=update", safe="")
-found, off, ctxs = [], 0, 0
+prods, off = [], 0
 while True:
-    d = http("GET", f"{MS_API}/audit?filter={flt}&limit=100&offset={off}", H)
-    rows = d.get("rows") or []
-    for c in rows:
-        ctxs += 1
-        eo = 0
-        while True:
-            ev = http("GET", f"{MS_API}/audit/{c['id']}/events?limit=100&offset={eo}", H).get("rows") or []
-            for e in ev:
-                diff = e.get("diff") or {}
-                if "name" in diff:
-                    nd = diff["name"]
-                    found.append((e.get("moment", "")[:16], (e.get("uid") or "").split("@")[0],
-                                  nd.get("oldValue"), nd.get("newValue")))
-            if len(ev) < 100:
-                break
-            eo += 100
-    if len(rows) < 100:
+    f = urllib.parse.quote(f"updated>={since}", safe="")
+    rows = http("GET", f"{MS_API}/entity/product?filter={f}&limit=1000&offset={off}", H).get("rows") or []
+    prods += rows
+    if len(rows) < 1000:
         break
-    off += 100
-print(f"с {since}: контекстов изменений товаров {ctxs}, смен наименования {len(found)}")
-for m, u, o, n in sorted(found):
-    print(f"NAME|{m}|{u}|{o}|{n}")
+    off += 1000
+print(f"с {since} (МСК): изменённых товаров {len(prods)}", flush=True)
+found = []
+for p in prods:
+    eo = 0
+    while True:
+        ev = http("GET", f"{p['meta']['href']}/audit?limit=100&offset={eo}", H).get("rows") or []
+        for e in ev:
+            if (e.get("moment") or "") < since:
+                continue
+            nd = (e.get("diff") or {}).get("name")
+            if nd:
+                found.append((e["moment"][:16], (e.get("uid") or "").split("@")[0], p.get("code"),
+                              nd.get("oldValue"), nd.get("newValue")))
+        if len(ev) < 100 or (ev and (ev[-1].get("moment") or "") < since):
+            break
+        eo += 100
+print(f"смен наименования: {len(found)}")
+for r in sorted(found):
+    print("NAME|" + "|".join(str(x) for x in r))
