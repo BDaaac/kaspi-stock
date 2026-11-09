@@ -1,7 +1,6 @@
 """Диагностика этикетки Ozon по новой схеме: v3 create -> v2 get."""
 import json, os, time, urllib.request, urllib.error
 from orders_sync import OZON_API, ozon_headers
-pn = os.environ["PN"]
 h = ozon_headers()
 def post(path, body):
     req = urllib.request.Request(OZON_API + path, data=json.dumps(body).encode(), headers=h, method="POST")
@@ -10,6 +9,12 @@ def post(path, body):
             b = r.read(); print(path, r.status, b[:600].decode("utf-8", "replace")); return json.loads(b)
     except urllib.error.HTTPError as e:
         print(path, e.code, e.read()[:600].decode("utf-8", "replace")); return {}
+import datetime
+now = datetime.datetime.utcnow()
+lst = post("/v3/posting/fbs/list", {"dir": "DESC", "limit": 50, "offset": 0, "filter": {"since": (now - datetime.timedelta(days=20)).strftime("%Y-%m-%dT%H:%M:%SZ"), "to": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "status": "awaiting_deliver"}})
+pns = [x["posting_number"] for x in (lst.get("result") or {}).get("postings") or []]
+print("awaiting_deliver:", pns)
+pn = os.environ.get("PN") or (pns[0] if pns else "")
 d = post("/v3/posting/fbs/package-label/create", {"posting_numbers": [pn]})
 r = d.get("result") or d
 tasks = r.get("tasks") or ([r] if r.get("task_id") else [])
