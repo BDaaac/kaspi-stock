@@ -208,31 +208,30 @@ def ozon_fbo():
 
 
 # ---------------- Этикетки ----------------
-def ozon_label_async(posting_number):
-    """Запасной путь: асинхронное задание на этикетку (если синхронный метод упирается в 429)."""
-    tid = None
-    for ver in ("v2", "v1"):
-        try:
-            d = http("POST", f"{OZON_API}/{ver}/posting/fbs/package-label/create", ozon_headers(),
-                     {"posting_number": [posting_number]})
-        except HttpError as e:
-            last = e
-            continue
-        r = d.get("result") or {}
-        tasks = r.get("tasks") if isinstance(r, dict) else None
-        if tasks:
-            big = [x for x in tasks if str(x.get("task_type", "")).lower() == "big_label"]
-            tid = (big or tasks)[0].get("task_id")
-        else:
-            tid = r.get("task_id") if isinstance(r, dict) else None
-        if tid:
-            break
-    if not tid:
-        raise HttpError(f"Ozon этикетка {posting_number}: не удалось создать задание ({locals().get('last')})")
+def _ozon_task_ids(d):
+    """task_id из ответа create (result.tasks[] / tasks[] / task_id), big_label в приоритете."""
+    r = d.get("result") if isinstance(d.get("result"), dict) else d
+    tasks = r.get("tasks") or d.get("tasks") or []
+    if tasks:
+        big = [x for x in tasks if str(x.get("task_type", "")).lower() == "big_label"]
+        return [x.get("task_id") for x in (big or tasks) if x.get("task_id")]
+    tid = r.get("task_id") or d.get("task_id")
+    return [tid] if tid else []
+
+
+def ozon_label(posting_number):
+    """Этикетка Ozon: задание /v3/posting/fbs/package-label/create -> файл по /v2/posting/fbs/package-label/get
+    (синхронный /v2/posting/fbs/package-label отключён Ozon с 02.11.2026)."""
+    d = http("POST", f"{OZON_API}/v3/posting/fbs/package-label/create", ozon_headers(),
+             {"posting_numbers": [posting_number]})
+    tids = _ozon_task_ids(d)
+    if not tids:
+        raise HttpError(f"Ozon этикетка {posting_number}: нет task_id в ответе: {str(d)[:200]}")
+    tid = tids[0]
     for _ in range(12):
         time.sleep(5)
-        d = http("POST", f"{OZON_API}/v1/posting/fbs/package-label/get", ozon_headers(), {"task_id": tid})
-        r = d.get("result") or {}
+        g = http("POST", f"{OZON_API}/v2/posting/fbs/package-label/get", ozon_headers(), {"task_id": tid})
+        r = g.get("result") if isinstance(g.get("result"), dict) else g
         st = str(r.get("status", "")).lower()
         if r.get("file_url"):
             with urllib.request.urlopen(r["file_url"], timeout=60) as f:
@@ -240,24 +239,6 @@ def ozon_label_async(posting_number):
         if st in ("error", "failed"):
             raise HttpError(f"Ozon этикетка {posting_number}: задание {tid} завершилось ошибкой: {str(r)[:200]}")
     raise HttpError(f"Ozon этикетка {posting_number}: задание {tid} не готово — заберу в следующем цикле")
-
-
-def ozon_label(posting_number):
-    try:
-        content, ctype = http("POST", f"{OZON_API}/v2/posting/fbs/package-label", ozon_headers(),
-                              {"posting_number": [posting_number]}, raw=True, _try=6)
-    except HttpError as e:
-        if "HTTP 429" not in str(e):
-            raise
-        print(f"Ozon этикетка {posting_number}: синхронный метод 429, беру через задание")
-        return ozon_label_async(posting_number)
-    if "json" in ctype:  # некоторые версии отдают PDF внутри JSON
-        d = json.loads(content)
-        b64 = d.get("file_content") or (d.get("result") or {}).get("file_content")
-        if not b64:
-            raise HttpError(f"Ozon этикетка {posting_number}: в ответе нет файла: {str(d)[:200]}")
-        return base64.b64decode(b64)
-    return content
 
 
 def kaspi_accept(order_id, code):
@@ -333,7 +314,7 @@ def ozon_ship(posting):
 
 def ozon_label_wait(posting_number):
     last = None
-    for _ in range(6):  # этикетка готовится не сразу после сборки
+    for _ in range(3):  # этикетка готовится не сразу после сборки
         time.sleep(5)
         try:
             return ozon_label(posting_number)
