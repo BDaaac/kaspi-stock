@@ -1,0 +1,15 @@
+name: МС — товары без фото
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u no_photo.py
