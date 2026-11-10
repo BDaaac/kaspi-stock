@@ -1,0 +1,18 @@
+name: МС — документы по товару
+
+on:
+  workflow_dispatch:
+    inputs:
+      ids: {description: "id товаров через запятую", type: string}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      IDS: ${{ inputs.ids }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u docs_by_product.py
