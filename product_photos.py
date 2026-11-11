@@ -1,4 +1,5 @@
-"""Добавить фото в карточки товаров МС. photos/plan.json: {"файл.jpg": "код товара"}. Старые фото не трогает."""
+"""Добавить фото в карточки товаров МС. photos/plan.json: {"файл.jpg": "код товара"}.
+Внимание: POST /images заменяет весь список фото, поэтому существующие фото передаются вместе с новым."""
 import base64, json, os, time, urllib.parse
 from orders_sync import MS_API, http
 
@@ -24,7 +25,7 @@ for fn, code in plan.items():
     name = f"{code}_{len(before) + 1}.jpg"
     for attempt in range(4):
         try:
-            http("POST", url, H, [{"filename": name, "content": content}])
+            http("POST", url, H, [{"meta": x["meta"]} for x in before] + [{"filename": name, "content": content}])  # POST заменяет весь список — старые передаём явно
             break
         except Exception as e:
             time.sleep(10)
