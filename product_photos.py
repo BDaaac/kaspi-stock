@@ -4,6 +4,14 @@ from orders_sync import MS_API, http
 
 tok = (os.environ.get("MS_ORDERS_TOKEN") or os.environ.get("MS_TOKEN") or "").strip()
 H = {"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip", "Content-Type": "application/json"}
+CHECK = [c for c in os.environ.get("CHECK", "").split(",") if c.strip()]
+if CHECK:  # только показать фото карточек
+    for code in CHECK:
+        f = urllib.parse.quote(f"code={code}", safe="")
+        p = http("GET", f"{MS_API}/entity/product?filter={f}&limit=1", H)["rows"][0]
+        im = http("GET", p["meta"]["href"] + "/images?limit=100", H).get("rows") or []
+        print("IMG", code, [(x.get("filename"), x.get("size"), x.get("updated")) for x in im])
+    raise SystemExit
 plan = json.load(open("photos/plan.json"))
 for fn, code in plan.items():
     f = urllib.parse.quote(f"code={code}", safe="")

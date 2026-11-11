@@ -3,6 +3,7 @@ name: Фото в карточки товаров МС
 on:
   workflow_dispatch:
     inputs:
+      check: {description: "Только показать фото этих кодов", type: string, default: ""}
       branch: {description: "Ветка с папкой photos/ (фото + plan.json)", type: string, default: "product-photos"}
 
 jobs:
@@ -12,9 +13,11 @@ jobs:
     env:
       MS_TOKEN: ${{ secrets.MS_TOKEN }}
       MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      CHECK: ${{ inputs.check }}
     steps:
       - uses: actions/checkout@v4
-      - run: |
+      - if: inputs.check == ''
+        run: |
           git fetch -q origin ${{ inputs.branch }}
           git checkout FETCH_HEAD -- photos && git reset -q
       - run: python3 -u product_photos.py
