@@ -1,0 +1,20 @@
+name: Фото в карточки товаров МС
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch: {description: "Ветка с папкой photos/ (фото + plan.json)", type: string, default: "product-photos"}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git fetch -q origin ${{ inputs.branch }}
+          git checkout FETCH_HEAD -- photos && git reset -q
+      - run: python3 -u product_photos.py
