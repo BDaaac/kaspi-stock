@@ -1,7 +1,15 @@
 """Данные для неснижаемого остатка: сроки поставки (заказ поставщику -> приёмка) и продажи по товарам за N дней."""
 import datetime as dt, os, urllib.parse
 from collections import defaultdict
-from orders_sync import MS_API, http
+from orders_sync import MS_API, http as _http
+import time
+def http(*a, **k):
+    for i in range(6):
+        try:
+            return _http(*a, **k)
+        except Exception as e:
+            if i == 5 or not any(c in str(e) for c in ("HTTP 5", "HTTP 429", "timed out", "reset")): raise
+            time.sleep(5 * (i + 1))
 tok = (os.environ.get("MS_ORDERS_TOKEN") or os.environ.get("MS_TOKEN") or "").strip()
 H = {"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip"}
 DAYS = int(os.environ.get("DAYS") or 365)
@@ -22,14 +30,16 @@ def d(s): return dt.datetime.strptime(s[:19], "%Y-%m-%d %H:%M:%S")
 
 # 1) сроки поставки
 print("== LEAD")
-for po in allrows("entity/purchaseorder", expand="agent,supplies", limit=100):
+for po in ([] if os.environ.get("SKIP_LEAD") else None) or []:
+    pass
+for po in ([] if os.environ.get("SKIP_LEAD") else allrows("entity/purchaseorder", expand="agent,supplies", limit=100)):
     sup = [s for s in (po.get("supplies") or []) if s.get("moment")]
     first = min((d(s["moment"]) for s in sup), default=None)
     print("LEAD|" + "|".join([po.get("name", ""), po["moment"][:10], (po.get("agent") or {}).get("name", ""),
                               first.strftime("%Y-%m-%d") if first else "", str((first - d(po["moment"])).days) if first else "",
                               str(len(sup))]))
 # приёмки без заказа — для истории прихода
-for s in allrows("entity/supply", expand="agent", limit=100):
+for s in ([] if os.environ.get("SKIP_LEAD") else allrows("entity/supply", expand="agent", limit=100)):
     print("SUPPLY|" + "|".join([s.get("name", ""), s["moment"][:10], (s.get("agent") or {}).get("name", ""),
                                 "PO" if s.get("purchaseOrder") else ""]))
 
