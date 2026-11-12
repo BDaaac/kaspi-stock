@@ -1,0 +1,18 @@
+name: МС — данные для неснижаемого остатка
+
+on:
+  workflow_dispatch:
+    inputs:
+      days: {description: "Период продаж, дней", type: string, default: "365"}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      DAYS: ${{ inputs.days }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u min_stock_data.py
