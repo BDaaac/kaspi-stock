@@ -6,8 +6,12 @@ H = {"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip", "Content-Type"
 plan = json.load(open("min_stock_plan.json"))
 if os.environ.get("VERIFY"):
     bad = 0
+    allp = {}
+    for off in (0, 1000):
+        for r in http("GET", f"{MS_API}/entity/product?limit=1000&offset={off}", H).get("rows") or []:
+            allp[r["id"]] = r.get("minimumBalance") or 0
     for x in plan:
-        v = http("GET", f"{MS_API}/entity/product/{x['id']}", H).get("minimumBalance") or 0
+        v = allp.get(x["id"], -1)
         if abs(v - x["q"]) > 0.001:
             bad += 1; print("НЕ СОВПАДАЕТ", x["code"], "план", x["q"], "в МС", v)
     print(f"проверено {len(plan)}, расхождений {bad}")
