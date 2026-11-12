@@ -1,0 +1,15 @@
+name: МС — запись неснижаемого остатка
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u min_stock_write.py
