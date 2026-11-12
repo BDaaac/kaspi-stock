@@ -4,6 +4,14 @@ from orders_sync import MS_API, http
 tok = (os.environ.get("MS_ORDERS_TOKEN") or os.environ.get("MS_TOKEN") or "").strip()
 H = {"Authorization": f"Bearer {tok}", "Accept-Encoding": "gzip", "Content-Type": "application/json"}
 plan = json.load(open("min_stock_plan.json"))
+if os.environ.get("VERIFY"):
+    bad = 0
+    for x in plan:
+        v = http("GET", f"{MS_API}/entity/product/{x['id']}", H).get("minimumBalance") or 0
+        if abs(v - x["q"]) > 0.001:
+            bad += 1; print("НЕ СОВПАДАЕТ", x["code"], "план", x["q"], "в МС", v)
+    print(f"проверено {len(plan)}, расхождений {bad}")
+    raise SystemExit
 def meta(pid): return {"href": f"{MS_API}/entity/product/{pid}", "type": "product", "mediaType": "application/json"}
 # проба на первой позиции: какое поле принимает аккаунт
 p0 = plan[0]

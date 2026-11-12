@@ -2,6 +2,8 @@ name: МС — запись неснижаемого остатка
 
 on:
   workflow_dispatch:
+    inputs:
+      verify: {description: "1 — только проверить", type: string, default: ""}
 
 jobs:
   run:
@@ -10,6 +12,7 @@ jobs:
     env:
       MS_TOKEN: ${{ secrets.MS_TOKEN }}
       MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      VERIFY: ${{ inputs.verify }}
     steps:
       - uses: actions/checkout@v4
       - run: python3 -u min_stock_write.py
