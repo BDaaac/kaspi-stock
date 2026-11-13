@@ -18,6 +18,8 @@ from datetime import datetime, timedelta, timezone
 
 from build_feed import API as MS_API, STORE_ID
 
+AI_MARK = "🤖 Создано ИИ (синхронизация Kaspi/Ozon)"  # пометка в комментарии документов, созданных скриптом
+
 DRY_RUN = os.environ.get("DRY_RUN", "1") != "0"
 VAT = 16  # НДС, %; цена площадки включает НДС
 RESERVE = os.environ.get("RESERVE", "1") == "1"
@@ -476,7 +478,9 @@ def ms_demand_from_order(order, posted, store=None):
     if DRY_RUN:
         return f"создал бы отгрузку из заказа ({'проведена' if posted else 'черновик'})"
     tpl = http("PUT", f"{MS_API}/entity/demand/new", ms_headers(), {"customerOrder": {"meta": order["meta"]}})
-    tpl["description"] = full.get("description")
+    tpl["description"] = full.get("description") or ""
+    if AI_MARK not in tpl["description"]:
+        tpl["description"] = (tpl["description"] + "\n" + AI_MARK).strip()
     tpl["vatEnabled"], tpl["vatIncluded"] = True, True
     if store:
         tpl["store"] = ms_meta("store", store)
@@ -728,7 +732,7 @@ def main():
         try:
             if not existing and active:
                 body = {"organization": ms_meta("organization", ORG_ID), "agent": ms_meta("counterparty", agent),
-                        "store": ms_meta("store", store), "description": desc, "externalCode": ext,
+                        "store": ms_meta("store", store), "description": desc + "\n" + AI_MARK, "externalCode": ext,
                         "vatEnabled": True, "vatIncluded": True, "positions": pos}
                 r = http("POST", f"{MS_API}/entity/customerorder", ms_headers(), body)
                 r = http("GET", r["meta"]["href"], ms_headers())  # склад проверяем по сохранённому заказу

@@ -107,7 +107,7 @@ def main():
             problems += 1
             user = (ctx.get("uid") or "").split("@")[0]
             what = "; ".join(f"{n} — {q:g} шт" for n, q in bad)
-            line = f"{tag} ({user}): {what}. Позиция есть в заказе {(http('GET', order['meta']['href'], ms_headers()).get('name'))}."
+            line = f"🤖 ИИ: {tag} ({user}): {what}. Позиция есть в заказе {(http('GET', order['meta']['href'], ms_headers()).get('name'))}."
             print(f"- Отгрузка {dem.get('name')}: {what}")
             if DRY:
                 continue
@@ -120,7 +120,7 @@ def main():
                 due += timedelta(days=1)
             for fio, emp in ASSIGNEES.items():
                 http("POST", f"{MS_API}/entity/task", ms_headers(), {
-                    "description": f"Проверить отгрузку {dem.get('name')}: с ТСД удалено — {what}. "
+                    "description": f"🤖 Поставлено ИИ. Проверить отгрузку {dem.get('name')}: с ТСД удалено — {what}. "
                                    f"В заказе позиция есть. Если товар отгружен — вернуть позицию в отгрузку.",
                     "assignee": ms_meta("employee", emp),
                     "operation": {"meta": dem["meta"]},
