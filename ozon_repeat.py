@@ -81,7 +81,7 @@ for p in recent:
     prev_ret = sorted(set(prev_ret) | {r for r in ret if r.split("-")[0] == pref and r != p["posting_number"]})
     city = (p.get("analytics_data") or {}).get("city") or ""
     print("TS|" + "|".join([p["posting_number"], (p.get("in_process_at") or "")[:10], p.get("status", ""),
-          ",".join(x.get("offer_id", "") for x in p.get("products") or []), h or "нет данных",
+          ",".join(f"{x.get('offer_id', '')}×{x.get('quantity', 1)}" for x in p.get("products") or []), h or "нет данных",
           str(len(prev)), ",".join(prev_ret) or "-", city]))
 
 # сводка по покупателям подъёмников за весь период
