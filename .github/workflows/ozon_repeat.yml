@@ -1,0 +1,22 @@
+name: Ozon — повторные покупатели с возвратами (Top Stay)
+
+on:
+  workflow_dispatch:
+    inputs:
+      recent: {description: "Свежие заказы, дней", type: string, default: "14"}
+      lookback: {description: "История, дней", type: string, default: "180"}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MS_TOKEN: ${{ secrets.MS_TOKEN }}
+      MS_ORDERS_TOKEN: ${{ secrets.MS_ORDERS_TOKEN }}
+      OZON_CLIENT_ID: ${{ secrets.OZON_CLIENT_ID }}
+      OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
+      RECENT: ${{ inputs.recent }}
+      LOOKBACK: ${{ inputs.lookback }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u ozon_repeat.py
