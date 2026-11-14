@@ -36,8 +36,8 @@ def ident(p):
     parts = [c.get("name"), c.get("phone"), a.get("name"), a.get("phone"),
              ((c.get("address") or {}).get("address_tail"))]
     parts = [re.sub(r"\W", "", str(x).lower()) for x in parts if x]
-    if not parts:
-        return None
+    if not parts:  # FBS: Ozon не отдаёт данных покупателя — берём номер покупателя (первая часть номера отправления)
+        return "покуп." + p["posting_number"].split("-")[0]
     return hashlib.sha256("|".join(parts).encode()).hexdigest()[:8]
 
 # возвраты: из МойСклад — отгрузки Ozon с пометкой «возврат» в комментарии
@@ -72,6 +72,8 @@ for p in recent:
     h = ident(p)
     prev = [q for q in by.get(h, []) if q["posting_number"] != p["posting_number"]] if h else []
     prev_ret = [q["posting_number"] for q in prev if q["posting_number"] in ret]
+    pref = p["posting_number"].split("-")[0]
+    prev_ret = sorted(set(prev_ret) | {r for r in ret if r.split("-")[0] == pref and r != p["posting_number"]})
     city = (p.get("analytics_data") or {}).get("city") or ""
     print("TS|" + "|".join([p["posting_number"], (p.get("in_process_at") or "")[:10], p.get("status", ""),
           ",".join(x.get("offer_id", "") for x in p.get("products") or []), h or "нет данных",
