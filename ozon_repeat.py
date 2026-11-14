@@ -8,17 +8,22 @@ o.DAYS = int(os.environ.get("LOOKBACK", "180"))
 H = o.ozon_headers()
 
 def fbs_full():
-    now = datetime.now(timezone.utc); out, cursor = [], ""
-    for _ in range(200):
-        body = {"sort_dir": "asc", "cursor": cursor, "limit": 100,
-                "filter": {"since": o.iso(now - timedelta(days=o.DAYS)), "to": o.iso(now)},
-                "with": {"analytics_data": True}}
-        d = o.http("POST", f"{o.OZON_API}/v4/posting/fbs/list", H, body)
-        res = d.get("result") if isinstance(d.get("result"), dict) else d
-        out += res.get("postings") or []
-        if not res.get("has_next"): return out
-        cursor = res.get("cursor") or ""
-    return out
+    """Ozon ограничивает период — берём окнами по 90 дней."""
+    now = datetime.now(timezone.utc); out = []
+    end = now; start_all = now - timedelta(days=o.DAYS)
+    while end > start_all:
+        beg = max(start_all, end - timedelta(days=90)); cursor = ""
+        for _ in range(200):
+            body = {"sort_dir": "asc", "cursor": cursor, "limit": 100,
+                    "filter": {"since": o.iso(beg), "to": o.iso(end)}, "with": {"analytics_data": True}}
+            d = o.http("POST", f"{o.OZON_API}/v4/posting/fbs/list", H, body)
+            res = d.get("result") if isinstance(d.get("result"), dict) else d
+            out += res.get("postings") or []
+            if not res.get("has_next"): break
+            cursor = res.get("cursor") or ""
+        end = beg
+    seen = {}; [seen.setdefault(p["posting_number"], p) for p in out]
+    return list(seen.values())
 
 posts = fbs_full()
 print("отправлений FBS:", len(posts))
