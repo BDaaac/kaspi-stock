@@ -78,3 +78,27 @@ for p in recent:
     print("TS|" + "|".join([p["posting_number"], (p.get("in_process_at") or "")[:10], p.get("status", ""),
           ",".join(x.get("offer_id", "") for x in p.get("products") or []), h or "нет данных",
           str(len(prev)), ",".join(prev_ret) or "-", city]))
+
+# сводка по покупателям подъёмников за весь период
+print("== BUYERS")
+agg = {}
+for p in posts:
+    if not any(x.get("offer_id") in ts for x in p.get("products") or []):
+        continue
+    b = p["posting_number"].split("-")[0]
+    a = agg.setdefault(b, {"n": 0, "ret": 0, "canc": 0, "deliv": 0, "open": 0, "cities": set(), "items": [], "dates": []})
+    a["n"] += 1
+    st = p.get("status", "")
+    if p["posting_number"] in ret: a["ret"] += 1
+    elif st == "cancelled": a["canc"] += 1
+    elif st == "delivered": a["deliv"] += 1
+    else: a["open"] += 1
+    c = (p.get("analytics_data") or {}).get("city")
+    if c: a["cities"].add(c)
+    a["items"] += [x.get("offer_id", "") for x in p.get("products") or []]
+    a["dates"].append((p.get("in_process_at") or "")[:10])
+tot = len([1 for p in posts if any(x.get("offer_id") in ts for x in p.get("products") or [])])
+print("заказов подъёмников:", tot, "покупателей:", len(agg))
+for b, a in sorted(agg.items(), key=lambda kv: (-kv[1]["ret"] - kv[1]["canc"], -kv[1]["n"])):
+    print("B|" + "|".join([b, str(a["n"]), str(a["ret"]), str(a["canc"]), str(a["deliv"]), str(a["open"]),
+          "/".join(sorted(a["cities"])), ",".join(sorted(set(a["items"]))), min(a["dates"]), max(a["dates"])]))
