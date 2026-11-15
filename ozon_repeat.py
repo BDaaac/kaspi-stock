@@ -71,7 +71,7 @@ for p in posts:
     h = ident(p)
     if h: by.setdefault(h, []).append(p)
 recent = [p for p in posts if (p.get("in_process_at") or "") >= o.iso(datetime.now(timezone.utc) - timedelta(days=int(os.environ.get("RECENT", "14"))))
-          and any(x.get("offer_id") in ts for x in p.get("products") or [])]
+          and (os.environ.get("ALL") or any(x.get("offer_id") in ts for x in p.get("products") or []))]
 print("свежих заказов Top Stay:", len(recent), "| с данными покупателя:", sum(1 for p in recent if ident(p)))
 for p in recent:
     h = ident(p)

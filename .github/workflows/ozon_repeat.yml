@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       recent: {description: "Свежие заказы, дней", type: string, default: "14"}
+      all: {description: "1 — все товары, не только Top Stay", type: string, default: ""}
       lookback: {description: "История, дней", type: string, default: "180"}
 
 jobs:
@@ -17,6 +18,7 @@ jobs:
       OZON_API_KEY: ${{ secrets.OZON_API_KEY }}
       RECENT: ${{ inputs.recent }}
       LOOKBACK: ${{ inputs.lookback }}
+      ALL: ${{ inputs.all }}
     steps:
       - uses: actions/checkout@v4
       - run: python3 -u ozon_repeat.py
