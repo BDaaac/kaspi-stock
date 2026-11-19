@@ -268,7 +268,12 @@ COMPONENT_RULES = [
 PRICE_FALLBACK = {"STW83": 493}  # тг, если розничную цену не удалось прочитать из МС
 COMPONENT_PRICES = {}  # код -> розничная цена в тиынах, заполняется в ms_products()
 COMPONENT_IDS = set()  # id карточек комплектующих (для сравнения с ручными заказами)
-COMPONENT_CODES = {c for _, comps in COMPONENT_RULES for c, _ in comps}
+# Бонус к конкретным карточкам Ozon (по артикулу продавца): (код, штук на 1 единицу товара, цена в тиынах).
+# Цена бонуса вычитается из цены основного товара — итог заказа = цене карточки.
+BONUS_BY_OFFER = {o: [("81H20AQA", 1, 5500)] for o in (  # м. планка Pivot Star, H2 — распродажа, 55 тг
+    "C81A875FAB(2)+2", "C81A875FAB(10)+10", "C81B875FAB(2)+2",
+    "C81B875FAB(10)+10", "C81C875FAB(2)+2", "C81C875FAB(10)+10")}
+COMPONENT_CODES = {c for _, comps in COMPONENT_RULES for c, _ in comps} | {c for b in BONUS_BY_OFFER.values() for c, _, _ in b}
 
 
 def components(code):
@@ -287,6 +292,8 @@ def need_pieces(items, mapping):
         q = int(it["qty"] or 0) * m[1]
         need[m[0]] = need.get(m[0], 0) + q
         for c, k in components(m[0]):
+            need[c] = need.get(c, 0) + q * k
+        for c, k, _ in BONUS_BY_OFFER.get(it["sku"] or "", []):
             need[c] = need.get(c, 0) + q * k
     return need
 
@@ -520,6 +527,14 @@ def build_positions(items, mapping, products, reserve):
                 extras.append({"quantity": qty * k, "price": price, "vat": VAT, "vatEnabled": True,
                                "assortment": {"meta": meta[0]}})
                 price_per_piece -= price * k  # комплектующее входит в цену площадки
+        for c, k, price in BONUS_BY_OFFER.get(it["sku"] or "", []):
+            meta = products.get(c)
+            if not meta or len(meta) != 1:
+                bad.append(f"бонус {c} {'не найден' if not meta else 'не уникален'} в МойСклад")
+            else:
+                extras.append({"quantity": qty * k, "price": price, "vat": VAT, "vatEnabled": True,
+                               "assortment": {"meta": meta[0]}})
+                price_per_piece -= price * k  # бонус входит в цену карточки
         if extras and price_per_piece <= 0:
             bad.append(f"{code}: цена площадки меньше стоимости комплектующих")
         if bad:
