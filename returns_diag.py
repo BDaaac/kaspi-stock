@@ -20,4 +20,5 @@ for z in o.kaspi_window(["ARCHIVE"], 28):
     for k, v in ((z.get("attributes") or {}).get("customer") or {}).items():
         vals[k].add(str(v))
 print("Kaspi customer: разных значений по полям:", {k: len(v) for k, v in vals.items()})
+print("Kaspi user id разных:", len({str(((z.get("relationships") or {}).get("user") or {}).get("data")) for z in o.kaspi_window(["ARCHIVE"], 28)}))
 print("Kaspi relationships:", sorted((z.get("relationships") or {}).keys()))

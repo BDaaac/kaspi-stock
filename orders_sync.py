@@ -721,9 +721,13 @@ def _hist_ozon():
 
 
 def _kaspi_buyer(o):
+    # телефон Kaspi отдаёт скрытым — берём id пользователя Kaspi, запасной вариант — имя и фамилия
+    uid = (((o.get("relationships") or {}).get("user") or {}).get("data") or {}).get("id")
+    if uid:
+        return "u" + str(uid)
     c = (o.get("attributes") or {}).get("customer") or {}
-    raw = re.sub(r"\D", "", str(c.get("cellPhone") or "")) or (str(c.get("firstName") or "") + str(c.get("lastName") or "")).lower()
-    return raw or None
+    raw = (str(c.get("firstName") or "") + str(c.get("lastName") or "")).lower().replace(" ", "")
+    return ("n" + raw) if raw else None
 
 
 def _hist_kaspi():
