@@ -1003,6 +1003,8 @@ def main():
                 log(f"| | {desc.splitlines()[0]} | | | | | {ms_demand_from_order(existing, posted=ext.startswith('ozonfbo-'), store=store if ext.startswith('ozonfbo-') else None)} |")
             elif existing and not active:
                 full = http("GET", existing["meta"]["href"], ms_headers())
+                if full.get("demands") and not shipped and any(ms_has_return(d["meta"]) for d in full["demands"]):
+                    continue  # отменён после отгрузки, возврат покупателя уже оформлен
                 if full.get("demands") and not shipped:
                     errors_n += 1
                     log(f"ОШИБКА: {desc.splitlines()[0]} отменён на площадке, но отгрузка по нему уже создана — "
