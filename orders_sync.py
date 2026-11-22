@@ -613,8 +613,7 @@ def ms_order_demands(ext, number):
 
 
 def ms_has_return(demand_meta):
-    f = urllib.parse.quote(f"demand={demand_meta['href']}", safe="")
-    return bool(http("GET", f"{MS_API}/entity/salesreturn?filter={f}&limit=1", ms_headers()).get("rows"))
+    return bool(http("GET", demand_meta["href"], ms_headers()).get("returns"))
 
 
 def ms_make_return(demand_meta, need, products, note):
