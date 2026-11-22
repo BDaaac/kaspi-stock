@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 import orders_sync as o
 
 H = o.ozon_headers()
+print("ключ Ozon: ...", (os.environ.get("OZON_API_KEY") or "")[-3:])
 rets, src = [], None
 tries = [
     ("/v1/returns/list", lambda lid: {"filter": {}, "limit": 500, "last_id": lid}),
