@@ -670,7 +670,10 @@ def returns_to_ms(products, omap, kmap):
         for o in kaspi_window(["ARCHIVE"], KASPI_RETURN_DAYS):
             a = o.get("attributes") or {}
             kd = a.get("kaspiDelivery") or {}
-            if a.get("status") in ("CANCELLED", "RETURNED") and kd.get("courierTransmissionDate") and kd.get("returnedToWarehouse"):
+            # RETURNED — возврат после доставки (Kaspi ставит статус по завершении возврата);
+            # CANCELLED после передачи курьеру — товар вернулся на склад (returnedToWarehouse)
+            if a.get("status") == "RETURNED" or (a.get("status") == "CANCELLED" and kd.get("courierTransmissionDate")
+                                                 and kd.get("returnedToWarehouse")):
                 todo.append(("Kaspi", str(a.get("code")), f"kaspi-{a.get('code')}", None,
                              a.get("cancellationReason") or a.get("status")))
     except Exception as e:
