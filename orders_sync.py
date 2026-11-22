@@ -721,10 +721,7 @@ def _hist_ozon():
 
 
 def _kaspi_buyer(o):
-    # телефон Kaspi отдаёт скрытым — берём id пользователя Kaspi, запасной вариант — имя и фамилия
-    uid = (((o.get("relationships") or {}).get("user") or {}).get("data") or {}).get("id")
-    if uid:
-        return "u" + str(uid)
+    # телефон и id пользователя Kaspi отдаёт скрытыми — сравниваем по имени и фамилии (как их отдаёт Kaspi)
     c = (o.get("attributes") or {}).get("customer") or {}
     raw = (str(c.get("firstName") or "") + str(c.get("lastName") or "")).lower().replace(" ", "")
     return ("n" + raw) if raw else None
@@ -779,7 +776,8 @@ def buyer_note(mp, number, kaspi_order=None):
     ret = sorted(n for n in prev if n in _returned_numbers())
     if not ret:
         return ""
-    return (f"⚠️ Этот покупатель ранее: заказов {len(prev)}, возвратов {len(ret)} ({', '.join(ret)}). "
+    who = "Этот покупатель" if mp == "ozon" else "Покупатель с таким же именем (Kaspi скрывает телефон — проверьте)"
+    return (f"⚠️ {who} ранее: заказов {len(prev)}, возвратов {len(ret)} ({', '.join(ret)}). "
             f"Прошу обратить на это внимание.")
 
 

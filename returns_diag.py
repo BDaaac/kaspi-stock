@@ -14,11 +14,8 @@ print("Ozon покупателей:", len(ho), "с >1 заказом:", sum(1 fo
 print("номеров с возвратом:", len(ret))
 for pn in ("0192839574-0040-1", "31594325-0698-1", "26509942-0390-1"):
     print("пример", pn, "->", o.buyer_note("ozon", pn) or "без пометки")
-import collections
-vals = collections.defaultdict(set)
-for z in o.kaspi_window(["ARCHIVE"], 28):
-    for k, v in ((z.get("attributes") or {}).get("customer") or {}).items():
-        vals[k].add(str(v))
-print("Kaspi customer: разных значений по полям:", {k: len(v) for k, v in vals.items()})
-print("Kaspi user id разных:", len({str(((z.get("relationships") or {}).get("user") or {}).get("data")) for z in o.kaspi_window(["ARCHIVE"], 28)}))
-print("Kaspi relationships:", sorted((z.get("relationships") or {}).keys()))
+hk = o._hist_kaspi()
+for b, v in hk.items():
+    if len(v) > 1:
+        r = v & ret
+        print("KB|", len(v), "заказов, возвратов", len(r))
