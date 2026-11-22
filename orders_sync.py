@@ -552,6 +552,234 @@ def build_positions(items, mapping, products, reserve):
     return pos, problems
 
 
+# ---------------- Возвраты покупателя и история покупателя ----------------
+# Возврат оформляется, когда товар фактически у нас: Ozon — статус возврата «Получен» (ReceivedBySeller),
+# Kaspi — заказ отменён/возвращён после передачи курьеру и вернулся на склад (returnedToWarehouse).
+RETURNS_FROM = os.environ.get("RETURNS_FROM", "2026-11-22T00:00:00Z")  # Ozon: возвраты, полученные с этой даты
+KASPI_RETURN_DAYS = 56
+_CACHE = {}
+KASPI_RAW = {}  # ext -> заказ Kaspi (для истории покупателя)
+
+
+def ozon_returns_all():
+    if "ozon_ret" not in _CACHE:
+        out, lid = {}, 0
+        for _ in range(40):
+            r = http("POST", f"{OZON_API}/v1/returns/list", ozon_headers(), {"filter": {}, "limit": 500, "last_id": lid})
+            rows = r.get("returns") or []
+            for x in rows:
+                out[x.get("id")] = x
+            if not r.get("has_next") or not rows:
+                break
+            lid = rows[-1].get("id") or 0
+        _CACHE["ozon_ret"] = list(out.values())
+    return _CACHE["ozon_ret"]
+
+
+def kaspi_window(states, days_back):
+    """Заказы Kaspi окнами по 14 дней (больше Kaspi не даёт)."""
+    out, end = [], datetime.now(timezone.utc)
+    start = end - timedelta(days=days_back)
+    while end > start:
+        beg = max(start, end - timedelta(days=14))
+        for state in states:
+            page = 0
+            while True:
+                q = urllib.parse.urlencode({"page[number]": page, "page[size]": 100, "filter[orders][state]": state,
+                                            "filter[orders][creationDate][$ge]": int(beg.timestamp() * 1000),
+                                            "filter[orders][creationDate][$le]": int(end.timestamp() * 1000)})
+                rows = http("GET", f"{KASPI_API}/orders?{q}", kaspi_headers()).get("data") or []
+                out += rows
+                if len(rows) < 100:
+                    break
+                page += 1
+        end = beg
+    seen = {}
+    for o in out:
+        seen[(o.get("attributes") or {}).get("code")] = o
+    return list(seen.values())
+
+
+def ms_order_demands(ext, number):
+    o = ms_existing(ext)
+    if o:
+        dms = http("GET", o["meta"]["href"], ms_headers()).get("demands") or []
+        if dms:
+            return [d["meta"] for d in dms]
+    f = urllib.parse.quote(f"description~{number}", safe="")
+    rows = http("GET", f"{MS_API}/entity/demand?filter={f}&limit=5", ms_headers()).get("rows") or []
+    return [r["meta"] for r in rows if (r.get("description") or "").splitlines()[:1]
+            and number in (r.get("description") or "").splitlines()[0]]
+
+
+def ms_has_return(demand_meta):
+    f = urllib.parse.quote(f"demand={demand_meta['href']}", safe="")
+    return bool(http("GET", f"{MS_API}/entity/salesreturn?filter={f}&limit=1", ms_headers()).get("rows"))
+
+
+def ms_make_return(demand_meta, need, products, note):
+    """Возврат покупателя на основании отгрузки. need = {код: шт} или None (вся отгрузка)."""
+    tpl = http("PUT", f"{MS_API}/entity/salesreturn/new", ms_headers(), {"demand": {"meta": demand_meta}})
+    pos = tpl.get("positions")
+    rows = pos.get("rows") if isinstance(pos, dict) else (pos or [])
+    if need is not None:
+        left = {}
+        for c, q in need.items():
+            metas = products.get(c) or []
+            if len(metas) != 1:
+                raise HttpError(f"код {c} не найден или не уникален в МойСклад")
+            left[metas[0]["href"]] = left.get(metas[0]["href"], 0) + q
+        keep = []
+        for r in rows:
+            h = r["assortment"]["meta"]["href"]
+            q = min(r.get("quantity") or 0, left.get(h, 0))
+            if q > 0:
+                r["quantity"] = q
+                left[h] -= q
+                keep.append(r)
+        if any(v > 0 for v in left.values()):
+            raise HttpError("в отгрузке нет всех возвращённых позиций — оформите возврат вручную")
+        rows = keep
+    if not rows:
+        raise HttpError("нет позиций для возврата")
+    tpl["positions"] = rows
+    tpl["applicable"] = True
+    tpl["description"] = note + "\n" + AI_MARK
+    r = http("POST", f"{MS_API}/entity/salesreturn", ms_headers(), tpl)
+    return r.get("name")
+
+
+def returns_to_ms(products, omap, kmap):
+    log("\n## Возвраты → МойСклад")
+    todo = []  # (площадка, номер, ext, need или None, причина)
+    try:
+        by = {}
+        for x in ozon_returns_all():
+            v = x.get("visual") or {}
+            if (v.get("status") or {}).get("sys_name") != "ReceivedBySeller" or (v.get("change_moment") or "") < RETURNS_FROM:
+                continue
+            pr = x.get("product") or {}
+            g = by.setdefault(x.get("posting_number"), {"items": {}, "why": set()})
+            g["items"][pr.get("offer_id")] = g["items"].get(pr.get("offer_id"), 0) + int(pr.get("quantity") or 1)
+            g["why"].add(x.get("return_reason_name") or "")
+        for pn, g in by.items():
+            need = need_pieces([{"sku": k, "qty": q} for k, q in g["items"].items()], omap)
+            todo.append(("Ozon", pn, f"ozon-{pn}", need if need is not None else "нет в таблице", "; ".join(sorted(g["why"]))))
+    except Exception as e:
+        log(f"ОШИБКА: возвраты Ozon не прочитаны — {e}")
+    try:
+        for o in kaspi_window(["ARCHIVE"], KASPI_RETURN_DAYS):
+            a = o.get("attributes") or {}
+            kd = a.get("kaspiDelivery") or {}
+            if a.get("status") in ("CANCELLED", "RETURNED") and kd.get("courierTransmissionDate") and kd.get("returnedToWarehouse"):
+                todo.append(("Kaspi", str(a.get("code")), f"kaspi-{a.get('code')}", None,
+                             a.get("cancellationReason") or a.get("status")))
+    except Exception as e:
+        log(f"ОШИБКА: возвраты Kaspi не прочитаны — {e}")
+    made = 0
+    for mp, num, ext, need, why in todo:
+        try:
+            if need == "нет в таблице":
+                log(f"ОШИБКА: возврат {mp} {num} получен, товара нет в таблице соответствия — оформите возврат вручную")
+                continue
+            dms = ms_order_demands(ext, num)
+            if not dms:
+                log(f"ОШИБКА: возврат {mp} {num} получен, но отгрузки в МойСклад нет — оформите возврат вручную")
+                continue
+            if any(ms_has_return(d) for d in dms):
+                continue
+            if DRY_RUN:
+                log(f"возврат {mp} {num}: создал бы возврат покупателя ({'вся отгрузка' if need is None else need})")
+                continue
+            name = ms_make_return(dms[0], need, products, f"Возврат {mp} {num}" + (f": {why}" if why else ""))
+            made += 1
+            log(f"возврат {mp} {num}: создан возврат покупателя №{name} (проведён)")
+        except Exception as e:
+            log(f"ОШИБКА возврата {mp} {num}: {e}")
+    log(f"возвратов к оформлению: {len(todo)}, создано: {made}")
+
+
+def _hist_ozon():
+    """префикс покупателя Ozon -> [номера отправлений] за год."""
+    if "hist_ozon" not in _CACHE:
+        now, out = datetime.now(timezone.utc), {}
+        end, start = now, now - timedelta(days=365)
+        while end > start:
+            beg = max(start, end - timedelta(days=90))
+            cursor = ""
+            for _ in range(100):
+                d = http("POST", f"{OZON_API}/v4/posting/fbs/list", ozon_headers(),
+                         {"sort_dir": "asc", "cursor": cursor, "limit": 100, "filter": {"since": iso(beg), "to": iso(end)}, "with": {}})
+                res = d.get("result") if isinstance(d.get("result"), dict) else d
+                for p in res.get("postings") or []:
+                    out.setdefault(p["posting_number"].split("-")[0], set()).add(p["posting_number"])
+                if not res.get("has_next"):
+                    break
+                cursor = res.get("cursor") or ""
+            end = beg
+        _CACHE["hist_ozon"] = out
+    return _CACHE["hist_ozon"]
+
+
+def _kaspi_buyer(o):
+    c = (o.get("attributes") or {}).get("customer") or {}
+    raw = re.sub(r"\D", "", str(c.get("cellPhone") or "")) or (str(c.get("firstName") or "") + str(c.get("lastName") or "")).lower()
+    return raw or None
+
+
+def _hist_kaspi():
+    """покупатель Kaspi -> [номера заказов] за полгода (Kaspi отдаёт окнами по 14 дней)."""
+    if "hist_kaspi" not in _CACHE:
+        out = {}
+        for o in kaspi_window(["ARCHIVE", "KASPI_DELIVERY", "DELIVERY", "PICKUP", "SIGN_REQUIRED", "NEW"], 182):
+            b = _kaspi_buyer(o)
+            if b:
+                out.setdefault(b, set()).add(str((o.get("attributes") or {}).get("code")))
+        _CACHE["hist_kaspi"] = out
+    return _CACHE["hist_kaspi"]
+
+
+def _returned_numbers():
+    """Номера заказов площадок, по которым был возврат: возвраты покупателя в МС + Ozon + Kaspi."""
+    if "returned" not in _CACHE:
+        nums = set()
+        for ag in (AGENT_OZON, AGENT_KASPI):
+            f = urllib.parse.quote(f"agent={MS_API}/entity/counterparty/{ag}", safe="")
+            for r in http("GET", f"{MS_API}/entity/salesreturn?filter={f}&limit=1000&expand=demand", ms_headers()).get("rows") or []:
+                d = (r.get("demand") or {}).get("description") or ""
+                if d:
+                    nums.add(d.splitlines()[0].replace("Заказ №", "").strip())
+        f = urllib.parse.quote(f"agent={MS_API}/entity/counterparty/{AGENT_OZON}", safe="")
+        for d in http("GET", f"{MS_API}/entity/demand?filter={f}&limit=1000", ms_headers()).get("rows") or []:
+            desc = d.get("description") or ""
+            if re.search(r"возвр|вовзр", desc, re.I):
+                nums.add(desc.splitlines()[0].strip())
+        try:
+            for x in ozon_returns_all():
+                if x.get("posting_number"):
+                    nums.add(x["posting_number"])
+        except Exception:
+            pass
+        _CACHE["returned"] = nums
+    return _CACHE["returned"]
+
+
+def buyer_note(mp, number, kaspi_order=None):
+    """Строка для комментария заказа, если покупатель раньше заказывал и возвращал. Иначе ''."""
+    if mp == "ozon":
+        prev = _hist_ozon().get(number.split("-")[0], set()) - {number}
+    else:
+        b = _kaspi_buyer(kaspi_order or {})
+        prev = (_hist_kaspi().get(b, set()) if b else set()) - {number}
+    if not prev:
+        return ""
+    ret = sorted(n for n in prev if n in _returned_numbers())
+    if not ret:
+        return ""
+    return (f"⚠️ Этот покупатель ранее: заказов {len(prev)}, возвратов {len(ret)} ({', '.join(ret)}). "
+            f"Прошу обратить на это внимание.")
+
+
 def main():
     log(f"# Заказы → МойСклад ({'ПРОВЕРКА, без записи' if DRY_RUN else 'ЗАПИСЬ'})")
     log(f"Период: {DAYS} дн., резерв: {'да' if RESERVE else 'нет'}, FBO: {'да' if INCLUDE_FBO else 'нет'}, "
@@ -632,6 +860,7 @@ def main():
                         raise HttpError(f"Kaspi {c}: ASSEMBLE отправлен, но накладная пока не появилась — заберу в следующем цикле")
                     return kaspi_label(url)
                 label = (f"kaspi-{code}.pdf", _assemble_and_get)
+            KASPI_RAW[f"kaspi-{code}"] = o
             plans.append((f"kaspi-{code}", AGENT_KASPI, STORE_ID, f"Заказ №{code}", items, kmap,
                           f"{o['_state']}/{status}, передан курьеру: {'да' if handed else 'нет'}, "
                           f"накладная: {'есть' if waybill else 'нет'}", active, created, label,
@@ -746,6 +975,17 @@ def main():
             continue
         try:
             if not existing and active:
+                note = ""
+                try:
+                    if ext.startswith("ozon-"):
+                        note = buyer_note("ozon", ext[5:])
+                    elif ext.startswith("kaspi-"):
+                        note = buyer_note("kaspi", ext[6:], KASPI_RAW.get(ext))
+                except Exception as e:
+                    log(f"{ext}: историю покупателя проверить не удалось ({e})")
+                if note:
+                    log(f"{ext}: покупатель ранее возвращал — пометка в комментарии")
+                    desc = desc + "\n" + note
                 body = {"organization": ms_meta("organization", ORG_ID), "agent": ms_meta("counterparty", agent),
                         "store": ms_meta("store", store), "description": desc + "\n" + AI_MARK, "externalCode": ext,
                         "vatEnabled": True, "vatIncluded": True, "positions": pos}
@@ -797,6 +1037,8 @@ def main():
                     errors_n += 1
                     log(f"ОШИБКА отгрузки {ext}: {e}")
 
+    if products and not ozon_skip:
+        returns_to_ms(products, omap, kmap)
     log(f"\nИтого: строк {len(plans)}, создано {created_n}, с ошибками/пропусками {errors_n}")
     return errors_n
 
