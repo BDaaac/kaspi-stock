@@ -557,6 +557,7 @@ def build_positions(items, mapping, products, reserve):
 # Kaspi — заказ отменён/возвращён после передачи курьеру и вернулся на склад (returnedToWarehouse).
 RETURNS_FROM = os.environ.get("RETURNS_FROM", "2026-11-22T00:00:00Z")  # Ozon: возвраты, полученные с этой даты
 KASPI_RETURN_DAYS = 56
+KASPI_RETURNS_ORDERS_FROM = int(datetime(2026, 10, 25, tzinfo=timezone.utc).timestamp() * 1000)
 _CACHE = {}
 KASPI_RAW = {}  # ext -> заказ Kaspi (для истории покупателя)
 
@@ -672,6 +673,8 @@ def returns_to_ms(products, omap, kmap):
             kd = a.get("kaspiDelivery") or {}
             # RETURNED — возврат после доставки (Kaspi ставит статус по завершении возврата);
             # CANCELLED после передачи курьеру — товар вернулся на склад (returnedToWarehouse)
+            if (a.get("creationDate") or 0) < KASPI_RETURNS_ORDERS_FROM:
+                continue  # заказы до запуска синхронизации — возвраты по ним оформлены вручную
             if a.get("status") == "RETURNED" or (a.get("status") == "CANCELLED" and kd.get("courierTransmissionDate")
                                                  and kd.get("returnedToWarehouse")):
                 todo.append(("Kaspi", str(a.get("code")), f"kaspi-{a.get('code')}", None,
