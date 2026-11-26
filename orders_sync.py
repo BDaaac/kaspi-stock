@@ -649,6 +649,21 @@ def ms_make_return(demand_meta, need, products, note):
     return r.get("name")
 
 
+def ms_order_set_return_state(ext):
+    """Статус заказа покупателя -> «возврат» (как оформляет Настя). True, если поменяли."""
+    o = ms_existing(ext)
+    if not o:
+        return False
+    if "st_return" not in _CACHE:
+        meta = http("GET", f"{MS_API}/entity/customerorder/metadata", ms_headers())
+        _CACHE["st_return"] = next((x["meta"] for x in meta.get("states") or [] if x.get("name", "").strip().lower() == "возврат"), None)
+    st = _CACHE["st_return"]
+    if not st or (o.get("state") or {}).get("meta", {}).get("href") == st["href"]:
+        return False
+    http("PUT", o["meta"]["href"], ms_headers(), {"state": {"meta": st}})
+    return True
+
+
 def returns_to_ms(products, omap, kmap):
     log("\n## Возвраты → МойСклад")
     todo = []  # (площадка, номер, ext, need или None, причина)
@@ -692,13 +707,16 @@ def returns_to_ms(products, omap, kmap):
                 log(f"ОШИБКА: возврат {mp} {num} получен, но отгрузки в МойСклад нет — оформите возврат вручную")
                 continue
             if any(ms_has_return(d) for d in dms):
+                if not DRY_RUN and ms_order_set_return_state(ext):
+                    log(f"возврат {mp} {num}: статус заказа → «возврат»")
                 continue
             if DRY_RUN:
                 log(f"возврат {mp} {num}: создал бы возврат покупателя ({'вся отгрузка' if need is None else need})")
                 continue
             name = ms_make_return(dms[0], need, products, f"Возврат {mp} {num}" + (f": {why}" if why else ""))
             made += 1
-            log(f"возврат {mp} {num}: создан возврат покупателя №{name} (проведён)")
+            ms_order_set_return_state(ext)
+            log(f"возврат {mp} {num}: создан возврат покупателя №{name} (проведён), статус заказа → «возврат»")
         except Exception as e:
             log(f"ОШИБКА возврата {mp} {num}: {e}")
     log(f"возвратов к оформлению: {len(todo)}, создано: {made}")
